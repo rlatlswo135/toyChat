@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import tw from "tailwind-styled-components";
 import { MyForm } from "../components/MyForm";
-import Link from "next/link";
+import { createAccount, fbAuth } from "../api/auth";
 
 export default function register() {
   const [registerInfo, setRegisterInfo] = useState({
@@ -16,8 +17,8 @@ export default function register() {
 
     return [
       { name: "email", value: email },
-      { name: "password", value: password },
-      { name: "passwordConfirm", value: passwordConfirm },
+      { name: "password", value: password, type: "password" },
+      { name: "passwordConfirm", value: passwordConfirm, type: "password" },
     ];
   }, [registerInfo]);
 
@@ -26,6 +27,17 @@ export default function register() {
     setRegisterInfo((prev) => ({ ...prev, [name]: value }));
   };
 
+  const submitHandler = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const { email, password, passwordConfirm } = registerInfo;
+    if (password !== passwordConfirm) {
+      console.log("같지않음");
+      return;
+    }
+    createAccount(fbAuth, email, password);
+  };
+
+  // ! 비밀번호 최소 6자 이상으로 해야함
   return (
     <>
       <Head>toyChat</Head>
@@ -34,11 +46,9 @@ export default function register() {
         <MyForm
           formData={formData}
           changeHandler={changeHandler}
-          submitHandler={() => console.log("submit")}
+          submitHandler={submitHandler}
+          submitText="Sign Up"
         />
-        <div>
-          <button>Register</button>
-        </div>
         <div>
           <Link href="/home">
             <button>Go Home</button>

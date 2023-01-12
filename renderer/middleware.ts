@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
+import { fbAuth } from "./api/auth";
 import type { NextFetchEvent, NextRequest } from "next/server";
-import { auth } from "./api/firebase";
 
 export function middleware(req: NextRequest, event: NextFetchEvent) {
-  // const currentUser = auth.currentUser;
-  // if (!currentUser) {
-  // console.log("````````````req.url````````````", req.nextUrl.host);
-  // return NextResponse.redirect(`${req.nextUrl.host}/home`);
-  // }
-  console.log("전역 미들웨어");
+  // ! 미들웨어가 더 빨라서 계속 리다이렉트됨
+  const currentUser = fbAuth.currentUser;
+  console.log("````````````currentUser````````````", currentUser);
+
+  if (!currentUser) {
+    console.log(`redirect to ${req.nextUrl.origin}/home`);
+    // return NextResponse.redirect(`${req.nextUrl.origin}/home`);
+  }
 }
+
+export const config = {
+  matcher: ["/chat"],
+};

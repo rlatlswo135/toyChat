@@ -6,9 +6,5 @@ type ContainerProps = {
 };
 
 export function Container({ children }: ContainerProps) {
-  return <Div>{children}</Div>;
+  return <div className="h-screen w-screen">{children}</div>;
 }
-
-const Div = tw.div`
-    h-screen w-screen border-2
-`;
