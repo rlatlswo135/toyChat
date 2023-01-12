@@ -1,64 +1,58 @@
 import React, { useMemo, useState } from "react";
-import tw from "tailwind-styled-components";
 import Head from "next/head";
-import Link from "next/link";
+import tw from "tailwind-styled-components";
 import { MyForm } from "../components/MyForm";
+import Link from "next/link";
 
-type LoginInfo = {
-  email: string;
-  password: string;
-};
-
-function Home() {
-  // 커스텀훅으로 changeHandler까지 해도 될듯
-  const [loginInfo, setLoginInfo] = useState<LoginInfo>({
+export default function register() {
+  const [registerInfo, setRegisterInfo] = useState({
     email: "",
     password: "",
+    passwordConfirm: "",
   });
 
   const formData = useMemo(() => {
-    const { email, password } = loginInfo;
+    const { email, password, passwordConfirm } = registerInfo;
 
     return [
-      { name: "ID", value: email },
-      { name: "PW", value: password },
+      { name: "email", value: email },
+      { name: "password", value: password },
+      { name: "passwordConfirm", value: passwordConfirm },
     ];
-  }, [loginInfo]);
+  }, [registerInfo]);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLoginInfo((prev) => ({ ...prev, [name]: value }));
+    setRegisterInfo((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <>
       <Head>toyChat</Head>
-      <LoginDiv>
-        <TitleDiv>Toy - Chat</TitleDiv>
+      <RegisterDiv>
+        <TitleDiv>Register</TitleDiv>
         <MyForm
           formData={formData}
           changeHandler={changeHandler}
           submitHandler={() => console.log("submit")}
         />
         <div>
-          <button>Login</button>
+          <button>Register</button>
         </div>
         <div>
-          <Link href="/register">
-            <button>Register</button>
+          <Link href="/home">
+            <button>Go Home</button>
           </Link>
         </div>
-      </LoginDiv>
+      </RegisterDiv>
     </>
   );
 }
-
-export default Home;
 
 const TitleDiv = tw.div`
   p-12 text-7xl font-bold
 `;
 
-const LoginDiv = tw.div`
+const RegisterDiv = tw.div`
   flex flex-col border-4 justify-center items-center h-full
 `;

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "my-nextron-app",
+  "name": "toyChat",
   "description": "My application description",
   "version": "1.0.0",
   "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "electron-serve": "^1.1.0",
-    "electron-store": "^8.1.0"
+    "electron-store": "^8.1.0",
+    "firebase": "^9.15.0",
+    "tailwind-styled-components": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
