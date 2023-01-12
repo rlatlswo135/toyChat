@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useCallback } from "react";
 import tw from "tailwind-styled-components";
+import { logOutAccount, fbAuth } from "../api/auth";
+import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 
 function Header() {
+  const { currentUser, setIsLoading, isLoading } =
+    useAuthContext() as AuthContext;
+
+  const logOutHandler = useCallback(() => {
+    if (currentUser) {
+      logOutAccount(fbAuth, currentUser.email);
+    }
+    setIsLoading(true);
+  }, []);
+
   return (
     <HeaderWrap>
-      <IconWrap>아이콘</IconWrap>
-      <ContentWrap>
-        <Content>컨텐츠들</Content>
-        <Content>컨텐츠들</Content>
-      </ContentWrap>
+      <button className="text-xl font-bold" onClick={logOutHandler}>
+        Sign out
+      </button>
     </HeaderWrap>
   );
 }
@@ -16,17 +26,5 @@ function Header() {
 export default Header;
 
 const HeaderWrap = tw.header`
- flex border-blue-400 h-[7%] w-screen
-`;
-
-const IconWrap = tw.div`
-h-full grow-[1] flex-4 
-`;
-
-const ContentWrap = tw.ul`
-flex justify-evenly items-center h-full grow-[2] flex-1 
-`;
-
-const Content = tw.li`
-h-full w-full  
+flex px-10 py-6 w-screen justify-end
 `;

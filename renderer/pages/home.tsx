@@ -6,6 +6,7 @@ import { MyForm } from "../components/MyForm";
 import { fbAuth, loginAccount } from "../api/auth";
 import { useRouter } from "next/router";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
+import { getChatroomList } from "../api/store";
 
 type LoginInfo = {
   email: string;
@@ -14,6 +15,8 @@ type LoginInfo = {
 
 function Home() {
   // 커스텀훅으로 changeHandler까지 해도 될듯
+
+  // Todo 계정 틀릴시 에러메시지
   const router = useRouter();
   const { setIsLoading } = useAuthContext() as AuthContext;
 
@@ -38,7 +41,6 @@ function Home() {
     const { email, password } = loginInfo;
     loginAccount(fbAuth, email, password);
     setIsLoading(true);
-    router.push("/chatlist");
   };
 
   return (
@@ -74,3 +76,6 @@ const TitleDiv = tw.div`
 const LoginDiv = tw.div`
   flex flex-col border-4 justify-center items-center h-full
 `;
+function useEffect(arg0: () => void, arg1: never[]) {
+  throw new Error("Function not implemented.");
+}

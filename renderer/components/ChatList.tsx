@@ -1,9 +1,16 @@
 import React from "react";
+import tw from "tailwind-styled-components";
 
-export default function ChatList() {
+function ChatList() {
   return (
-    <div className="max-h-[93%] h-full">
-      <div className="h-full bg-gray-200">채팅리스트</div>
-    </div>
+    <Div>
+      <div className="flex flex-col h-full items-center bg-gray-400/25"></div>
+    </Div>
   );
 }
+
+export { ChatList };
+
+const Div = tw.div`
+flex-1 h-full grow-[1] px-10 py-4  
+`;

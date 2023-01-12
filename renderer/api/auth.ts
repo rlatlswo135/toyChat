@@ -1,17 +1,28 @@
-import { fbInit } from "./firebase";
+import { fbApp, fbDb } from "./firebase";
 import { NextResponse, NextRequest } from "next/server";
 import {
   Auth,
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
   setPersistence,
   browserLocalPersistence,
 } from "firebase/auth";
+import { useChangeLoginState, usePostCollectionData } from "./hook";
+import { getAccountList } from "./store";
 
-const fbAuth = getAuth(fbInit);
-setPersistence(fbAuth, browserLocalPersistence);
+const fbAuth = getAuth(fbApp);
+
+const loginAccount = async (auth: Auth, email: string, password: string) => {
+  try {
+    await fbAuth.setPersistence(browserLocalPersistence);
+    const data = await signInWithEmailAndPassword(auth, email, password);
+    console.log("````````````login - data````````````", data);
+    useChangeLoginState(email, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 const createAccount = async (auth: Auth, email: string, password: string) => {
   try {
@@ -19,26 +30,25 @@ const createAccount = async (auth: Auth, email: string, password: string) => {
       console.log("password 더길게");
       return;
     }
-    const data = await createUserWithEmailAndPassword(auth, email, password);
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    console.log("````````````register````````````", user);
+    usePostCollectionData("accounts", { uid: user.uid, email: user.email });
+    loginAccount(auth, email, password);
   } catch (err) {
     console.error(err);
   }
 };
 
-const loginAccount = async (auth: Auth, email: string, password: string) => {
+const logOutAccount = async (auth: Auth, email: string) => {
   try {
-    // const persistance = await auth.setPersistence({ type: "LOCAL" });
-    const data = await signInWithEmailAndPassword(auth, email, password);
-    console.log("````````````data````````````", data);
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-const logOutAccount = async (auth: Auth) => {
-  try {
-    const data = await signOut(auth);
-    console.log("````````````data````````````", data);
+    const data = await auth.signOut();
+    console.log("````````````email````````````", email);
+    useChangeLoginState(email, false);
+    console.log("````````````logout - data````````````", data);
   } catch (err) {
     console.error(err);
   }

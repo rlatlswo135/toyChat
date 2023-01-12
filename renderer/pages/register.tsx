@@ -38,6 +38,7 @@ export default function register() {
   };
 
   // ! 비밀번호 최소 6자 이상으로 해야함
+  // ! 가입 중복시 에러메시지
   return (
     <>
       <Head>toyChat</Head>

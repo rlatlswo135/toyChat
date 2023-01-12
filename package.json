@@ -15,6 +15,7 @@
     "electron-serve": "^1.1.0",
     "electron-store": "^8.1.0",
     "firebase": "^9.15.0",
+    "firebase-admin": "^11.4.1",
     "tailwind-styled-components": "^2.2.0"
   },
   "devDependencies": {

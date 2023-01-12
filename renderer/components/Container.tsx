@@ -6,5 +6,12 @@ type ContainerProps = {
 };
 
 export function Container({ children }: ContainerProps) {
-  return <div className="h-screen w-screen">{children}</div>;
+  return (
+    <div
+      id="container"
+      className="flex flex-col max-h-screen h-screen w-screen overflow-auto"
+    >
+      {children}
+    </div>
+  );
 }

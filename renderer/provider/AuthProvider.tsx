@@ -9,9 +9,10 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { useRouter } from "next/router";
 import { onAuthStateChanged } from "firebase/auth";
 import { fbAuth } from "../api/auth";
-import { User } from "firebase/auth";
+import { getUserList } from "../api/firebase";
 
 type ContextProps = {
   children: ReactNode;
@@ -31,16 +32,19 @@ export type AuthContext = {
 const authContext = createContext<AuthContext | null>(null);
 
 function AuthProvider({ children }: ContextProps) {
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  console.log("`````````test`````````", fbAuth.currentUser);
 
   useEffect(() => {
     onAuthStateChanged(fbAuth, (user) => {
       if (user && user.email && user.uid) {
         setCurrentUser({ email: user.email, uid: user.uid });
+        router.push("/chatlist");
+      } else {
+        setCurrentUser(null);
       }
+      setIsLoading(false);
     });
   }, []);
 

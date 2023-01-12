@@ -3,8 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    @apply h-full;
+  }
   body {
-    @apply bg-gray-900 text-white;
+    @apply bg-gray-900 text-white h-full;
+  }
+  #__next {
+    @apply flex flex-col min-h-full;
   }
   input {
     @apply text-gray-900;
