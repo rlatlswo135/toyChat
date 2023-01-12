@@ -5,18 +5,27 @@ import tw from "tailwind-styled-components";
 import { MyForm } from "../components/MyForm";
 import { createAccount, fbAuth } from "../api/auth";
 
+type RegisterProps = {
+  email: string;
+  name: string;
+  password: string;
+  passwordConfirm: string;
+};
+
 export default function register() {
-  const [registerInfo, setRegisterInfo] = useState({
+  const [registerInfo, setRegisterInfo] = useState<RegisterProps>({
     email: "",
+    name: "",
     password: "",
     passwordConfirm: "",
   });
 
   const formData = useMemo(() => {
-    const { email, password, passwordConfirm } = registerInfo;
+    const { email, password, passwordConfirm, name } = registerInfo;
 
     return [
       { name: "email", value: email },
+      { name: "name", value: name },
       { name: "password", value: password, type: "password" },
       { name: "passwordConfirm", value: passwordConfirm, type: "password" },
     ];
@@ -29,12 +38,12 @@ export default function register() {
 
   const submitHandler = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const { email, password, passwordConfirm } = registerInfo;
+    const { email, password, passwordConfirm, name } = registerInfo;
     if (password !== passwordConfirm) {
       console.log("같지않음");
       return;
     }
-    createAccount(fbAuth, email, password);
+    createAccount(fbAuth, email, name, password);
   };
 
   // ! 비밀번호 최소 6자 이상으로 해야함

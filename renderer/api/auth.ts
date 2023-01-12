@@ -24,7 +24,12 @@ const loginAccount = async (auth: Auth, email: string, password: string) => {
   }
 };
 
-const createAccount = async (auth: Auth, email: string, password: string) => {
+const createAccount = async (
+  auth: Auth,
+  email: string,
+  name: string,
+  password: string
+) => {
   try {
     if (password.length < 6) {
       console.log("password 더길게");
@@ -36,7 +41,11 @@ const createAccount = async (auth: Auth, email: string, password: string) => {
       password
     );
     console.log("````````````register````````````", user);
-    usePostCollectionData("accounts", { uid: user.uid, email: user.email });
+    usePostCollectionData("accounts", {
+      uid: user.uid,
+      email: user.email,
+      name: name,
+    });
     loginAccount(auth, email, password);
   } catch (err) {
     console.error(err);

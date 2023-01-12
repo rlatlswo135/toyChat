@@ -20,12 +20,12 @@ function chatList() {
   // }, [currentUser, isLoading]);
 
   return (
-    <div className="flex flex-col h-full overflow-auto">
+    <div className="flex flex-col h-full">
       <Header />
       <p className="border-b-2 pt-24 py-12 text-center text-8xl font-bold">
         Welcom to Toy Chat
       </p>
-      <div className="flex flex-1 max-h-full w-full mx-auto pt-12">
+      <div className="flex flex-1 w-full max-h-full mx-auto pt-12 overflow-x-hidden">
         <UserList />
         <ChatList />
       </div>

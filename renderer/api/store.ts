@@ -7,17 +7,20 @@ export type Account = {
   email: string;
   docId: string;
   isLogin: boolean;
+  name: string;
 };
 
-type ChatRoom = {
+export type ChatRoom = {
   docId: string;
-  chatList: { content: string; sendInfo: Account }[];
+  chatList: { content: string; sendInfo: { uid: string; email: string } }[];
   roomId: string;
-  users: Account[];
+  users: { uid: string; email: string }[];
+  lastChat: Date;
 };
 
 const getChatroomList = async () => {
   const result = await useCollectionData<ChatRoom>("chatRoom");
+  console.log("````````````chat list````````````", result);
   return result;
 };
 
