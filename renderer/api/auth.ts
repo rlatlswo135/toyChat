@@ -7,6 +7,8 @@ import {
   signInWithEmailAndPassword,
   setPersistence,
   browserLocalPersistence,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { useChangeLoginState, usePostCollectionData } from "./hook";
 import { getAccountList } from "./store";

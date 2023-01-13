@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import Header from "../components/Header";
@@ -6,10 +6,12 @@ import { getAccountList } from "../api/store";
 import tw from "tailwind-styled-components";
 import { UserList } from "../components/UserList";
 import { ChatList } from "../components/ChatList";
+import { Chat } from "../components/Chat";
 
 function chatList() {
-  const router = useRouter();
-  const { currentUser, isLoading } = useAuthContext() as AuthContext;
+  const [roomId, setRoomId] = useState<string>("1");
+
+  console.log("````````````roomId````````````", roomId);
 
   // Todo redirect부분 -> 작업끝난후 주석해제
   // useEffect(() => {
@@ -27,10 +29,26 @@ function chatList() {
       </p>
       <div className="flex flex-1 w-full max-h-full mx-auto pt-12 overflow-x-hidden">
         <UserList />
-        <ChatList />
+        <Div>
+          <ChatWrap>
+            {roomId.length ? (
+              <Chat roomId={roomId} />
+            ) : (
+              <ChatList setRoomId={setRoomId} />
+            )}
+          </ChatWrap>
+        </Div>
       </div>
     </div>
   );
 }
 
 export default chatList;
+
+const Div = tw.div`
+px-10 py-4 flex-1 max-h-full grow-[10]
+`;
+
+const ChatWrap = tw.div`
+h-full items-center bg-gray-400/25 overflow-y-auto
+`;
