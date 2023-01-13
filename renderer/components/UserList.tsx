@@ -27,6 +27,7 @@ function UserList({ setRoomId }: UserListProps) {
     isLogin: boolean
   ) => {
     const users = [] as User[];
+    console.log("````````````arg````````````", uid, email, name);
     if (uid && email && name && currentUser) {
       users.push({ ...currentUser });
       if (uid !== currentUser.uid) {
@@ -58,11 +59,12 @@ function UserList({ setRoomId }: UserListProps) {
             key={`uid-${uid}`}
             $login={isLogin}
           >
-            <div className="h-full flex-[1]">
-              <span>asd</span>
-              {/* <Image alt="error" src={profile} /> */}
+            <div className="w-10 h-10 rounded-full bg-white overflow-hidden">
+              <Image alt="error" src={profile} className="w-full h-full p-1" />
             </div>
-            <p className="h-full flex-[2]">{name}</p>
+            <div>
+              <div className="h-full flex-[2] text-left pl-4">{name}</div>
+            </div>
           </UserDiv>
         ))}
     </Div>
@@ -72,7 +74,7 @@ function UserList({ setRoomId }: UserListProps) {
 export { UserList };
 
 const Div = tw.div`
-flex p-4 flex-col h-full flex-grow-[0.5]
+flex p-4 flex-col h-full w-60 overflow-y-auto overflow-x-hidden
 `;
 
 type UserDivProps = {
@@ -80,6 +82,6 @@ type UserDivProps = {
 };
 
 const UserDiv = tw.div<UserDivProps>`
-    flex items-center border-2 h-12 m-1 text-center text-l hover:cursor-pointer hover:font-bold
+    flex items-center w-full h-12 m-1 text-center text-l hover:cursor-pointer hover:font-bold
     ${(props) => (props.$login ? "text-white" : "text-logout")}
 `;

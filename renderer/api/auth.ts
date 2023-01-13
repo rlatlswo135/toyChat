@@ -8,8 +8,8 @@ import {
   browserLocalPersistence,
   updateProfile,
 } from "firebase/auth";
-import { useChangeLoginState, usePostCollectionData } from "./hook";
-import { getAccountList } from "./store";
+import { usePostCollectionData } from "./hook";
+import { changeLoginState } from "./store";
 
 const fbAuth = getAuth(fbApp);
 
@@ -17,7 +17,7 @@ const loginAccount = async (auth: Auth, email: string, password: string) => {
   try {
     await fbAuth.setPersistence(browserLocalPersistence);
     const data = await signInWithEmailAndPassword(auth, email, password);
-    useChangeLoginState(email, true);
+    changeLoginState(email, true);
   } catch (err) {
     console.error(err);
   }
@@ -55,7 +55,7 @@ const createAccount = async (
 const logOutAccount = async (auth: Auth, email: string) => {
   try {
     const data = await auth.signOut();
-    useChangeLoginState(email, false);
+    changeLoginState(email, false);
     console.log("````````````logout - data````````````", data);
   } catch (err) {
     console.error(err);

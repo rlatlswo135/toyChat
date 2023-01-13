@@ -7,17 +7,16 @@ import {
   WithFieldValue,
   DocumentData,
   onSnapshot,
+  getDoc,
 } from "firebase/firestore";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { fbDb } from "./firebase";
 import { getAccountList } from "./store";
 
-export const test = () => {
-  console.log("aa");
-};
+type Collection = "accounts" | "chatRoom";
 // state로 쓰기위해
 export const useCollectionState = <T>(
-  name: "accounts" | "chatRoom"
+  name: Collection
 ): [T[], Dispatch<SetStateAction<T[]>>] => {
   const [docs, setDocs] = useState<T[]>([]);
   const ref = collection(fbDb, name);
@@ -36,7 +35,30 @@ export const useCollectionState = <T>(
   return [docs, setDocs];
 };
 
-// 단순한 get Templeate
+export const useDocState = <T>(colName: Collection, docId: string) => {
+  const [docData, setDocData] = useState<T>();
+  const ref = doc(fbDb, colName, docId);
+
+  useEffect(() => {
+    onSnapshot(ref, (snapshot: any) => {
+      setDocData(snapshot.data());
+    });
+  }, []);
+
+  return [docData, setDocData];
+};
+
+// ********************* STORE CRUD TEMPLATE ************************* //
+export const useDocData = async (collectionName: Collection, docId: string) => {
+  try {
+    const ref = doc(fbDb, collectionName, docId);
+    const docSnapShot = await getDoc(ref);
+
+    console.log("`````````````docSnapShot```````````", docSnapShot);
+  } catch (err) {
+    console.error(err);
+  }
+};
 export const useCollectionData = async <T>(name: string) => {
   try {
     const resultArray: T[] = [];
@@ -67,17 +89,28 @@ export const usePostCollectionData = async <T>(
   }
 };
 
-export const usePutCollectionData = async () => {};
+export const usePostDocData = async <T>(
+  colName: Collection,
+  docId: string,
+  data: WithFieldValue<DocumentData>
+) => {
+  try {
+    const ref = doc(fbDb, colName, docId);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-export const useChangeLoginState = async (email: string, state: boolean) => {
-  const accountList = await getAccountList();
-  const docId = accountList?.filter((doc) => doc.email === email)[0].docId;
-
+export const useUpdateDocData = async (
+  colName: Collection,
+  docId: string,
+  data: WithFieldValue<DocumentData>
+) => {
   if (docId) {
-    const ref = doc(fbDb, "accounts", docId);
-    const data = { isLogin: state };
-
+    const ref = doc(fbDb, colName, docId);
     const result = await updateDoc(ref, data);
     return result;
   }
 };
+
+// ************************************************************************** //
