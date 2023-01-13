@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
+import { useCollectionState } from "../api/hook";
 import { ChatRoom, getChatroomList } from "../api/store";
 
 function ChatList() {
-  const [chatRoomList, setChatRoomList] = useState<ChatRoom[]>([]);
+  const [chatRoomList, setChatRoomList] =
+    useCollectionState<ChatRoom>("chatRoom");
 
-  useEffect(() => {
-    async function fetchAndSet() {
-      const data = await getChatroomList();
-      if (data) {
-        setChatRoomList(data);
-      }
-    }
-    fetchAndSet();
-  }, []);
-
-  console.log("````````````chatRoomList````````````", chatRoomList);
+  // Todo 선택된 채팅있으면 LocalState하나 만들어서 있을시 Chat컴포넌트로 렌더하게
 
   return (
     <Div>

@@ -1,20 +1,10 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import tw from "tailwind-styled-components";
-import { Account, getAccountList } from "../api/store";
+import { useCollectionState } from "../api/hook";
+import { Account } from "../api/store";
 
 function UserList() {
-  const [accountList, setAccountList] = useState<Account[]>([]);
-
-  useEffect(() => {
-    async function fetchAndSet() {
-      const data = await getAccountList();
-      if (data) {
-        const sort = data.sort((a, b) => Number(b.isLogin) - Number(a.isLogin));
-        setAccountList(sort);
-      }
-    }
-    fetchAndSet();
-  }, []);
+  const [accountList, setAccountList] = useCollectionState<Account>("accounts");
 
   // Todo width 가변인거 수정
   return (
@@ -22,11 +12,13 @@ function UserList() {
       <p className="text-center text-xl font-bold border-b-2 pb-4 mb-6">
         User List
       </p>
-      {accountList.map(({ uid, isLogin, email, name }) => (
-        <User key={`uid-${uid}`} $login={isLogin}>
-          {name}
-        </User>
-      ))}
+      {accountList
+        .sort((a, b) => Number(b.isLogin) - Number(a.isLogin))
+        .map(({ uid, isLogin, email, name }) => (
+          <User key={`uid-${uid}`} $login={isLogin}>
+            {name}
+          </User>
+        ))}
     </Div>
   );
 }

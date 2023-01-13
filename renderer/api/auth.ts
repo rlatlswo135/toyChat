@@ -40,7 +40,6 @@ const createAccount = async (
       email,
       password
     );
-    console.log("````````````register````````````", user);
     usePostCollectionData("accounts", {
       uid: user.uid,
       email: user.email,
@@ -55,7 +54,6 @@ const createAccount = async (
 const logOutAccount = async (auth: Auth, email: string) => {
   try {
     const data = await auth.signOut();
-    console.log("````````````email````````````", email);
     useChangeLoginState(email, false);
     console.log("````````````logout - data````````````", data);
   } catch (err) {

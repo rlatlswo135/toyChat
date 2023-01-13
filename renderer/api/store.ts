@@ -1,6 +1,6 @@
 import { getDocs, collection, doc } from "firebase/firestore";
 import { fbDb } from "./firebase";
-import { useCollectionData } from "./hook";
+import { useCollectionData, useCollectionState } from "./hook";
 
 export type Account = {
   uid: string;
@@ -20,13 +20,11 @@ export type ChatRoom = {
 
 const getChatroomList = async () => {
   const result = await useCollectionData<ChatRoom>("chatRoom");
-  console.log("````````````chat list````````````", result);
   return result;
 };
 
 const getAccountList = async () => {
   const result = await useCollectionData<Account>("accounts");
-  console.log("````````````account````````````", result);
   return result;
 };
 

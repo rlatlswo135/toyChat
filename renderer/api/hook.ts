@@ -6,10 +6,32 @@ import {
   doc,
   WithFieldValue,
   DocumentData,
+  onSnapshot,
 } from "firebase/firestore";
+import { Dispatch, SetStateAction, useState } from "react";
 import { fbDb } from "./firebase";
 import { getAccountList } from "./store";
 
+// state로 쓰기위해
+export const useCollectionState = <T>(
+  name: "accounts" | "chatRoom"
+): [T[], Dispatch<SetStateAction<T[]>>] => {
+  const [docs, setDocs] = useState<T[]>([]);
+  const ref = collection(fbDb, name);
+
+  onSnapshot(ref, (snapshot) => {
+    setDocs(
+      snapshot.docs.map((item) => {
+        const result = item.data() as T;
+        return result;
+      })
+    );
+  });
+
+  return [docs, setDocs];
+};
+
+// 단순한 get Templeate
 export const useCollectionData = async <T>(name: string) => {
   try {
     const resultArray: T[] = [];

@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
+import tw from "tailwind-styled-components";
 
 type FormData = {
   name: string;
@@ -40,11 +41,15 @@ export function MyForm({
           </div>
         );
       })}
-      <div className="m-5 p-3 text-center bg-gray-500 hover:bg-gray-300 w-96 text-2xl">
+      <ButtonWrap>
         <button className="w-full h-full" type="submit">
           {submitText}
         </button>
-      </div>
+      </ButtonWrap>
     </form>
   );
 }
+
+export const ButtonWrap = tw.div`
+mx-auto mb-3 p-2 text-center bg-gray-500 hover:bg-gray-300 w-96 text-2xl rounded
+`;
