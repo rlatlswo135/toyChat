@@ -36,11 +36,12 @@ function Home() {
     setLoginInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const signIn = (e: React.SyntheticEvent) => {
+  const signIn = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const { email, password } = loginInfo;
-    loginAccount(fbAuth, email, password);
-    setIsLoading(true);
+    await loginAccount(fbAuth, email, password);
+    setIsLoading(false);
+    router.push("/chatlist");
   };
 
   return (

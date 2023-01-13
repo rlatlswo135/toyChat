@@ -9,17 +9,18 @@ import { ChatList } from "../components/ChatList";
 import { Chat } from "../components/Chat";
 
 function chatList() {
-  const [roomId, setRoomId] = useState<string>("1");
-
-  console.log("````````````roomId````````````", roomId);
+  const router = useRouter();
+  const { currentUser, setIsLoading, isLoading } =
+    useAuthContext() as AuthContext;
+  const [roomId, setRoomId] = useState<string>("");
 
   // Todo redirect부분 -> 작업끝난후 주석해제
   // useEffect(() => {
-  //   if (!currentUser && !isLoading) {
+  //   if (!currentUser) {
   //     router.push("/home");
   //     return;
   //   }
-  // }, [currentUser, isLoading]);
+  // }, [currentUser]);
 
   return (
     <div className="flex flex-col h-full">
@@ -28,11 +29,11 @@ function chatList() {
         Welcom to Toy Chat
       </p>
       <div className="flex flex-1 w-full max-h-full mx-auto pt-12 overflow-x-hidden">
-        <UserList />
+        <UserList setRoomId={setRoomId} />
         <Div>
           <ChatWrap>
             {roomId.length ? (
-              <Chat roomId={roomId} />
+              <Chat roomId={roomId} setRoomId={setRoomId} />
             ) : (
               <ChatList setRoomId={setRoomId} />
             )}
@@ -46,9 +47,9 @@ function chatList() {
 export default chatList;
 
 const Div = tw.div`
-px-10 py-4 flex-1 max-h-full grow-[10]
+px-10 py-4 flex-1 max-h-full max-w-full grow-[10]
 `;
 
 const ChatWrap = tw.div`
-h-full items-center bg-gray-400/25 overflow-y-auto
+w-full h-full items-center bg-gray-400/25 overflow-y-auto
 `;

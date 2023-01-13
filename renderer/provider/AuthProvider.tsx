@@ -9,10 +9,10 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useRouter } from "next/router";
 import { onAuthStateChanged } from "firebase/auth";
 import { fbAuth } from "../api/auth";
 import { getUserList } from "../api/firebase";
+import { Account, getAccountList } from "../api/store";
 
 type ContextProps = {
   children: ReactNode;
@@ -21,6 +21,8 @@ type ContextProps = {
 type CurrentUser = {
   email: string;
   uid: string;
+  name: string;
+  image: string | null;
 };
 
 export type AuthContext = {
@@ -32,21 +34,36 @@ export type AuthContext = {
 const authContext = createContext<AuthContext | null>(null);
 
 function AuthProvider({ children }: ContextProps) {
-  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [accountList, setAccountList] = useState<Account[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    onAuthStateChanged(fbAuth, (user) => {
-      if (user && user.email && user.uid) {
-        setCurrentUser({ email: user.email, uid: user.uid });
-        router.push("/chatlist");
-      } else {
-        setCurrentUser(null);
+    async function fetchAndSet() {
+      const result = await getAccountList();
+      if (result && result.length) {
+        setAccountList(result);
       }
-      setIsLoading(false);
-    });
-  }, []);
+    }
+    if (!accountList.length) {
+      fetchAndSet();
+    }
+
+    if (accountList) {
+      onAuthStateChanged(fbAuth, (user) => {
+        if (user && user.email && user.uid) {
+          setCurrentUser({
+            email: user.email,
+            uid: user.uid,
+            name: user.displayName || "",
+            image: user.photoURL,
+          });
+        } else {
+          setCurrentUser(null);
+        }
+      });
+    }
+  }, [accountList]);
 
   const value = useMemo(
     () => ({

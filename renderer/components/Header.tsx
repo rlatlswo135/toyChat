@@ -11,7 +11,6 @@ function Header() {
     if (currentUser) {
       logOutAccount(fbAuth, currentUser.email);
     }
-    setIsLoading(true);
   }, []);
 
   return (

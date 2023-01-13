@@ -1,23 +1,31 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 import { useCollectionState } from "../api/hook";
-import { ChatRoom, getChatroomList } from "../api/store";
+import { ChatRoom, getChatroomList, postChatRoom } from "../api/store";
+import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 
 type ChatListProps = {
   setRoomId: Dispatch<SetStateAction<string>>;
 };
 function ChatList({ setRoomId }: ChatListProps) {
+  // Todo 선택된 채팅있으면 LocalState하나 만들어서 있을시 Chat컴포넌트로 렌더하게
+
   const [chatRoomList, setChatRoomList] =
     useCollectionState<ChatRoom>("chatRoom");
 
-  // Todo 선택된 채팅있으면 LocalState하나 만들어서 있을시 Chat컴포넌트로 렌더하게
+  const intoChatRoom = (id: string | undefined) => {
+    console.log("into");
+    if (id) {
+      setRoomId(id);
+    }
+  };
 
   return (
     <>
       {chatRoomList.map((chat) => {
-        const { roomId, users, lastChat, chatList } = chat;
+        const { docId, users, lastChat, chatList } = chat;
         return (
-          <Room key={`room-${roomId}`} onClick={() => setRoomId(roomId)}>
+          <Room key={`room-${docId}`} onClick={() => intoChatRoom(docId)}>
             <div className="flex h-full">
               <div className="border-2 h-full flex-grow-[0.5]">이미지들</div>
               <div className="flex flex-col border-2 h-full flex-grow-[6]">

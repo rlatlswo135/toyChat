@@ -8,10 +8,13 @@ import {
   DocumentData,
   onSnapshot,
 } from "firebase/firestore";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { fbDb } from "./firebase";
 import { getAccountList } from "./store";
 
+export const test = () => {
+  console.log("aa");
+};
 // state로 쓰기위해
 export const useCollectionState = <T>(
   name: "accounts" | "chatRoom"
@@ -19,14 +22,16 @@ export const useCollectionState = <T>(
   const [docs, setDocs] = useState<T[]>([]);
   const ref = collection(fbDb, name);
 
-  onSnapshot(ref, (snapshot) => {
-    setDocs(
-      snapshot.docs.map((item) => {
-        const result = item.data() as T;
-        return result;
-      })
-    );
-  });
+  useEffect(() => {
+    onSnapshot(ref, (snapshot) => {
+      const result = snapshot.docs.map((item) => ({
+        ...item.data(),
+        docId: item.id,
+      })) as T[];
+
+      setDocs(result);
+    });
+  }, []);
 
   return [docs, setDocs];
 };
@@ -56,7 +61,7 @@ export const usePostCollectionData = async <T>(
   try {
     const ref = collection(fbDb, name);
     const result = await addDoc(ref, data);
-    console.log("````````````ref````````````", ref);
+    return result;
   } catch (err) {
     console.error(err);
   }
@@ -73,7 +78,6 @@ export const useChangeLoginState = async (email: string, state: boolean) => {
     const data = { isLogin: state };
 
     const result = await updateDoc(ref, data);
-    console.log("````````````login update result````````````", result);
     return result;
   }
 };

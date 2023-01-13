@@ -5,10 +5,8 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  setPersistence,
   browserLocalPersistence,
-  GoogleAuthProvider,
-  signInWithPopup,
+  updateProfile,
 } from "firebase/auth";
 import { useChangeLoginState, usePostCollectionData } from "./hook";
 import { getAccountList } from "./store";
@@ -19,7 +17,6 @@ const loginAccount = async (auth: Auth, email: string, password: string) => {
   try {
     await fbAuth.setPersistence(browserLocalPersistence);
     const data = await signInWithEmailAndPassword(auth, email, password);
-    console.log("````````````login - data````````````", data);
     useChangeLoginState(email, true);
   } catch (err) {
     console.error(err);
@@ -42,12 +39,14 @@ const createAccount = async (
       email,
       password
     );
+
+    await updateProfile(user, { displayName: name, photoURL: "" });
     usePostCollectionData("accounts", {
       uid: user.uid,
       email: user.email,
       name: name,
+      image: "",
     });
-    loginAccount(auth, email, password);
   } catch (err) {
     console.error(err);
   }
