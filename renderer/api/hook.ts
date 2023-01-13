@@ -35,12 +35,16 @@ export const useCollectionState = <T>(
   return [docs, setDocs];
 };
 
-export const useDocState = <T>(colName: Collection, docId: string) => {
-  const [docData, setDocData] = useState<T>();
+export const useDocState = <T>(
+  colName: Collection,
+  docId: string
+): [T | null, Dispatch<SetStateAction<T | null>>] => {
+  const [docData, setDocData] = useState<T | null>(null);
   const ref = doc(fbDb, colName, docId);
 
   useEffect(() => {
-    onSnapshot(ref, (snapshot: any) => {
+    onSnapshot(ref, (snapshot: DocumentData) => {
+      console.log("````````````snapshot````````````", snapshot);
       setDocData(snapshot.data());
     });
   }, []);

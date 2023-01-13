@@ -56,8 +56,9 @@ export const postChatData = async (docId: string, data: Chat) => {
   const body = {
     chatList: arrayUnion(data),
   };
+  console.log("````````````body````````````", body);
   const result = await useUpdateDocData("chatRoom", docId, body);
-  console.log("````````````send chat````````````", result);
+  // console.log("````````````send chat -> api````````````", result);
   return result;
 };
 
