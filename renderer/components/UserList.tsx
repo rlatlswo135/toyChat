@@ -7,8 +7,8 @@ import React, {
 } from "react";
 import tw from "tailwind-styled-components";
 import Image from "next/image";
-import { useCollectionState, test } from "../api/hook";
-import { Account, postChatRoom, User } from "../api/store";
+import { useCollectionState } from "../api/hook";
+import { Account, ChatRoom, postChatRoom, User } from "../api/store";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import profile from "../public/images/default.png";
 
@@ -18,20 +18,23 @@ type UserListProps = {
 
 function UserList({ setRoomId }: UserListProps) {
   const { currentUser } = useAuthContext() as AuthContext;
+
+  const [chatRoomList, setChatRoomList] =
+    useCollectionState<ChatRoom>("chatRoom");
   const [accountList, setAccountList] = useCollectionState<Account>("accounts");
 
   const createChatRoom = async (
     uid: string,
     email: string,
     name: string,
+    image: string | null,
     isLogin: boolean
   ) => {
     const users = [] as User[];
-    console.log("````````````arg````````````", uid, email, name);
     if (uid && email && name && currentUser) {
       users.push({ ...currentUser });
       if (uid !== currentUser.uid) {
-        users.push({ email, name, uid });
+        users.push({ image, email, name, uid });
       }
 
       const newRoom = await postChatRoom({
@@ -55,7 +58,7 @@ function UserList({ setRoomId }: UserListProps) {
         .sort((a, b) => Number(b.isLogin) - Number(a.isLogin))
         .map(({ uid, isLogin, email, name, image }) => (
           <UserDiv
-            onClick={() => createChatRoom(uid, email, name, isLogin)}
+            onClick={() => createChatRoom(uid, email, name, image, isLogin)}
             key={`uid-${uid}`}
             $login={isLogin}
           >

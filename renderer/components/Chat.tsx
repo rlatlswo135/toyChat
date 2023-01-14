@@ -1,6 +1,6 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
 import tw from "tailwind-styled-components";
-import { ChatRoom, getChatRoomInfo } from "../api/store";
+import { ChatRoom, deleteChatRoom, getChatRoomInfo } from "../api/store";
 import { useDocState } from "../api/hook";
 import { postChatData } from "../api/store";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
@@ -10,6 +10,8 @@ type ChatProps = {
   roomId: string;
   setRoomId: Dispatch<SetStateAction<string>>;
 };
+
+// Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
 // 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
 function Chat({ roomId, setRoomId }: ChatProps) {
@@ -32,7 +34,14 @@ function Chat({ roomId, setRoomId }: ChatProps) {
     }
   };
 
-  const exitChat = () => setRoomId("");
+  const exitChat = useCallback(() => setRoomId(""), []);
+
+  const deleteChat = useCallback(() => {
+    deleteChatRoom(roomId);
+    setRoomId("");
+  }, [roomId]);
+
+  console.log("````````````roomInfo````````````", roomInfo);
 
   if (!roomInfo) {
     return <div>Loading</div>;
@@ -47,8 +56,10 @@ function Chat({ roomId, setRoomId }: ChatProps) {
         >
           x
         </button> */}
-        <header className="p-4 flex justify-evenly border-b-2 border-gray-400/20 text-l font-bold tracking-wide">
-          {`${roomInfo.users.map((user) => user.name).join(",")}`}
+        <header className="py-4 px-8 flex justify-between border-b-2 border-gray-400/20 text-l font-bold tracking-wide">
+          <button onClick={exitChat}>&larr;</button>
+          <span>{`${roomInfo.users.map((user) => user.name).join(",")}`}</span>
+          <button onClick={deleteChat}>Menu</button>
         </header>
         {/* 채팅박스 */}
         <div className="flex pt-2 justify-center text-gray-300/30 text-[0.9em]">

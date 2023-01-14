@@ -8,10 +8,10 @@ import {
   DocumentData,
   onSnapshot,
   getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { fbDb } from "./firebase";
-import { getAccountList } from "./store";
 
 type Collection = "accounts" | "chatRoom";
 // state로 쓰기위해
@@ -61,6 +61,7 @@ export const useDocData = async (collectionName: Collection, docId: string) => {
     console.log("`````````````docSnapShot```````````", docSnapShot);
   } catch (err) {
     console.error(err);
+    return err;
   }
 };
 export const useCollectionData = async <T>(name: string) => {
@@ -77,6 +78,7 @@ export const useCollectionData = async <T>(name: string) => {
     return resultArray;
   } catch (err) {
     console.error(err);
+    return JSON.stringify(err);
   }
 };
 
@@ -90,6 +92,7 @@ export const usePostCollectionData = async <T>(
     return result;
   } catch (err) {
     console.error(err);
+    return JSON.stringify(err);
   }
 };
 
@@ -102,6 +105,7 @@ export const usePostDocData = async <T>(
     const ref = doc(fbDb, colName, docId);
   } catch (err) {
     console.error(err);
+    return err;
   }
 };
 
@@ -110,10 +114,28 @@ export const useUpdateDocData = async (
   docId: string,
   data: WithFieldValue<DocumentData>
 ) => {
-  if (docId) {
-    const ref = doc(fbDb, colName, docId);
-    const result = await updateDoc(ref, data);
-    return result;
+  try {
+    if (docId) {
+      const ref = doc(fbDb, colName, docId);
+      const result = await updateDoc(ref, data);
+      return result;
+    }
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};
+
+export const useDeleteDocData = async (colName: Collection, docId: string) => {
+  try {
+    if (docId) {
+      const ref = doc(fbDb, colName, docId);
+      const result = await deleteDoc(ref);
+      return result;
+    }
+  } catch (err) {
+    console.error(err);
+    return err;
   }
 };
 

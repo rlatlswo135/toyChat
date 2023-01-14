@@ -1,6 +1,7 @@
 import { DocumentData, WithFieldValue, arrayUnion } from "firebase/firestore";
 import {
   useCollectionData,
+  useDeleteDocData,
   useDocData,
   usePostCollectionData,
   useUpdateDocData,
@@ -48,6 +49,13 @@ export const getChatRoomInfo = async (docId: string) => {
 
 export const postChatRoom = async (data: WithFieldValue<ChatRoom>) => {
   const result = await usePostCollectionData<ChatRoom>("chatRoom", data);
+  if (typeof result !== "string") {
+    return result;
+  }
+};
+
+export const deleteChatRoom = async (docId: string) => {
+  const result = await useDeleteDocData("chatRoom", docId);
   return result;
 };
 
@@ -70,6 +78,9 @@ export const getAccountList = async () => {
 
 export const changeLoginState = async (email: string, state: boolean) => {
   const accountList = await getAccountList();
+  if (typeof accountList === "string") {
+    return accountList;
+  }
   const docId = accountList?.filter((doc) => doc.email === email)[0].docId;
   const data = { isLogin: state };
   if (docId) {
