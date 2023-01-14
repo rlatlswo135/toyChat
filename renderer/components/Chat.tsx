@@ -5,6 +5,7 @@ import { useDocState } from "../api/hook";
 import { postChatData } from "../api/store";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
+import { getNow } from "../api/util";
 
 type ChatProps = {
   roomId: string;
@@ -27,7 +28,11 @@ function Chat({ roomId, setRoomId }: ChatProps) {
     // Todo 너무 빨리 시도했습니다 같은 UI업데이트위해 db에 업데이트중인지 확인해야할듯
     e.preventDefault();
     if (currentUser) {
-      const data = { content: chatContent, sendInfo: { ...currentUser } };
+      const data = {
+        content: chatContent,
+        sendInfo: { ...currentUser },
+        createdAt: getNow(),
+      };
       postChatData(roomId, data);
       console.log("````````````sendChat````````````");
       setChatContent("");
@@ -90,8 +95,6 @@ function Chat({ roomId, setRoomId }: ChatProps) {
               />
             );
           })}
-          {/* <MyChat time={new Date()} content="test" /> */}
-          {/* <OtherChat time={new Date()} content="test" img={null} /> */}
         </div>
       </div>
       <form className="p-1" onSubmit={submitHandler}>

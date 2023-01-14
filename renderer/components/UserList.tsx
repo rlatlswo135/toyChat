@@ -11,6 +11,8 @@ import { useCollectionState } from "../api/hook";
 import { Account, ChatRoom, postChatRoom, User } from "../api/store";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import profile from "../public/images/default.png";
+import { getNow, toJson } from "../api/util";
+import { Timestamp } from "firebase/firestore";
 
 type UserListProps = {
   setRoomId: Dispatch<SetStateAction<string>>;
@@ -23,6 +25,7 @@ function UserList({ setRoomId }: UserListProps) {
     useCollectionState<ChatRoom>("chatRoom");
   const [accountList, setAccountList] = useCollectionState<Account>("accounts");
 
+  console.log("````````````chatRoomList````````````", chatRoomList);
   const createChatRoom = async (
     uid: string,
     email: string,
@@ -37,9 +40,18 @@ function UserList({ setRoomId }: UserListProps) {
         users.push({ image, email, name, uid });
       }
 
+      // ** 유저리스트가 중복되는 방이면 생성X
+      if (
+        chatRoomList.map((room) => toJson(room.users)).includes(toJson(users))
+      ) {
+        console.log("이미 방 존재");
+        return;
+      }
+
       const newRoom = await postChatRoom({
         users,
         chatList: [],
+        createdAt: getNow(),
       });
 
       if (newRoom) {

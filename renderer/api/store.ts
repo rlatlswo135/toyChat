@@ -1,4 +1,9 @@
-import { DocumentData, WithFieldValue, arrayUnion } from "firebase/firestore";
+import {
+  DocumentData,
+  WithFieldValue,
+  arrayUnion,
+  Timestamp,
+} from "firebase/firestore";
 import {
   useCollectionData,
   useDeleteDocData,
@@ -26,14 +31,14 @@ export type User = {
 export type Chat = {
   content: string;
   sendInfo: User;
+  createdAt: Timestamp;
 };
 
 export type ChatRoom = {
   docId?: string;
   chatList: Chat[];
   users: User[];
-  createdAt?: Date;
-  lastChat?: Date;
+  createdAt: Timestamp;
 };
 
 // ********************** chatroom

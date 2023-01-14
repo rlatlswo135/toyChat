@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import tw from "tailwind-styled-components";
 import Head from "next/head";
 import Link from "next/link";

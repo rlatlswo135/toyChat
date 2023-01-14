@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { fbDb } from "./firebase";
+import { toJson } from "./util";
 
 type Collection = "accounts" | "chatRoom";
 // state로 쓰기위해
@@ -78,7 +79,7 @@ export const useCollectionData = async <T>(name: string) => {
     return resultArray;
   } catch (err) {
     console.error(err);
-    return JSON.stringify(err);
+    return toJson(err);
   }
 };
 
@@ -92,7 +93,7 @@ export const usePostCollectionData = async <T>(
     return result;
   } catch (err) {
     console.error(err);
-    return JSON.stringify(err);
+    return toJson(err);
   }
 };
 
