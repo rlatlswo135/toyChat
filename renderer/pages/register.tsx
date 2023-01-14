@@ -7,8 +7,6 @@ import tw from "tailwind-styled-components";
 import { MyForm } from "../components/MyForm";
 import { createAccount, fbAuth } from "../api/auth";
 import profile from "../public/images/default.png";
-import { AiFillCamera } from "react-icons/ai";
-import { MdCancel } from "react-icons/md";
 import { LIMIT } from "../constants/image";
 
 type RegisterInfo = {

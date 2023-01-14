@@ -1,18 +1,31 @@
 import { format, formatDistance } from "date-fns";
 import { Timestamp } from "firebase/firestore";
 
-type TimeDistance = "today" | "1day" | "days" | "month" | "year" | "error";
+type TimeDistance =
+  | "today"
+  | "1day"
+  | "2day"
+  | "days"
+  | "month"
+  | "year"
+  | "error";
 
 export const toTimeDistance = (now: Date, base: Timestamp): TimeDistance => {
   try {
     const BASE = base.toDate() as Date;
     const result = formatDistance(now, BASE);
-    if (result.includes("minute")) {
-      return "today";
-    }
 
+    console.log("````````````result````````````", result);
     if (result === "1 day") {
       return "1day";
+    }
+
+    if (result === "2 days") {
+      return "2day";
+    }
+
+    if (result.includes("days")) {
+      return "days";
     }
 
     if (result.includes("month") || result.includes("months")) {
@@ -23,7 +36,7 @@ export const toTimeDistance = (now: Date, base: Timestamp): TimeDistance => {
       return "year";
     }
 
-    return "days";
+    return "today";
   } catch (err) {
     return "error";
     console.error(err);
@@ -34,7 +47,10 @@ export const getNow = (): Timestamp => Timestamp.now();
 
 export const toTime = (time: Timestamp) => {
   const TIME = time.toDate() as Date;
-  return format(TIME, "p");
+  const [formatTime, afterTw] = format(TIME, "p").split(" ");
+
+  if (afterTw === "AM") return `오전 ${formatTime}`;
+  return `오후 ${formatTime}`;
 };
 export const toDate = (time: Timestamp) => {
   const TIME = time.toDate() as Date;

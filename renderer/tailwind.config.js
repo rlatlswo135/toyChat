@@ -12,7 +12,7 @@ module.exports = {
       white: colors.white,
       gray: colors.gray,
       blue: colors.blue,
-      logout: `${colors.gray[500]} !important`,
+      time: "rgb(209 213 219 / 0.3)",
     },
     extend: {},
   },

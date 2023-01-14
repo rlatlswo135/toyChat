@@ -1,16 +1,10 @@
 import { Timestamp } from "firebase/firestore";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useCallback } from "react";
 import tw from "tailwind-styled-components";
-import { useCollectionState } from "../api/hook";
-import { ChatRoom, getChatroomList, postChatRoom } from "../api/store";
-import { toTime, toTimeDistance, toYear, toDate } from "../api/util";
-import { AuthContext, useAuthContext } from "../provider/AuthProvider";
+import { useCollectionState } from "../../api/hook";
+import { ChatRoom } from "../../api/store";
+import { toTime, toTimeDistance, toYear, toDate } from "../../api/util";
+import { ProfileImages } from "./ProfileImages";
 
 type ChatListProps = {
   setRoomId: Dispatch<SetStateAction<string>>;
@@ -35,7 +29,7 @@ function ChatList({ setRoomId }: ChatListProps) {
     }
 
     const result = toTimeDistance(new Date(), time);
-    console.log("````````````time````````````", time);
+    console.log("````````````result````````````", result);
     switch (result) {
       case "error":
         return "";
@@ -43,6 +37,8 @@ function ChatList({ setRoomId }: ChatListProps) {
         return toTime(time);
       case "1day":
         return "어제";
+      case "2day":
+        return "그저께";
       case "month":
       case "days":
         return toDate(time);
@@ -64,27 +60,31 @@ function ChatList({ setRoomId }: ChatListProps) {
       {chatRoomList.map((chat) => {
         const { docId, users, createdAt, chatList } = chat;
         return (
-          <div
-            onClick={() => intoChatRoom(docId)}
-            key={`room-${docId}`}
-            className="flex border-2 h-28 hover:cursor-pointer hover:bg-gray-500"
-          >
-            {/* 이미지컨테이너는 가변 그리드? */}
-            <div className="p-2 border-2 w-20 h-20">이미지</div>
-            <div className="flex flex-col w-full border-2 justify-between">
-              <p className="border-2 p-1 tracking-wide font-bold">
-                {users.map((item) => item.name).join(",")}
-              </p>
-              <p className="border-2 flex-1 p-1 text-gray-300/80">
-                {chatList.at(-1)?.content}
-              </p>
-            </div>
-            <span>
+          <Div>
+            <ChatWrap onClick={() => intoChatRoom(docId)} key={`room-${docId}`}>
+              {/* 이미지컨테이너는 가변 그리드? */}
+              <ProfileImages users={users} />
+              <Contents>
+                <p className="p-1 tracking-wide font-semibold text-2xl">
+                  {users
+                    .map((item) => item.name)
+                    .slice(0, 4)
+                    .join(",")}
+                  <span className="ml-3 text-sm text-gray-400">
+                    {users.length}
+                  </span>
+                </p>
+                <p className="flex-1 p-1 text-gray-300/80">
+                  {chatList.at(-1)?.content}
+                </p>
+              </Contents>
+            </ChatWrap>
+            <span className="text-time">
               {chatList.length
                 ? timeFormat(chatList[chatList.length - 1].createdAt)
                 : timeFormat(createdAt)}
             </span>
-          </div>
+          </Div>
         );
       })}
 
@@ -97,6 +97,13 @@ function ChatList({ setRoomId }: ChatListProps) {
 
 export { ChatList };
 
-const Room = tw.div`
-  w-full h-1/6 border-dotted border-b border-gray-500/60 hover:cursor-pointer hover:bg-gray-500
+const Div = tw.div`
+flex justify-between pl-3 pr-5 items-center border-b-2 border-gray-300/10 hover:bg-gray-500 hover:cursor-pointer
+`;
+const ChatWrap = tw.div`
+flex items-center h-28
+`;
+
+const Contents = tw.div`
+flex flex-col justify-between  
 `;

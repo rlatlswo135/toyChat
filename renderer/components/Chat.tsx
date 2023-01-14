@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
 import tw from "tailwind-styled-components";
-import { ChatRoom, deleteChatRoom, getChatRoomInfo } from "../api/store";
+import { ChatRoom, deleteChatRoom } from "../api/store";
 import { useDocState } from "../api/hook";
 import { postChatData } from "../api/store";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
@@ -67,7 +67,7 @@ function Chat({ roomId, setRoomId }: ChatProps) {
           <button onClick={deleteChat}>Menu</button>
         </header>
         {/* 채팅박스 */}
-        <div className="flex pt-2 justify-center text-gray-300/30 text-[0.9em]">
+        <div className="flex pt-2 justify-center text-time text-[0.9em]">
           <span>timeStamp 00:00</span>
         </div>
         <div id="chatWrap" className="px-3">
