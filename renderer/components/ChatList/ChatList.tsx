@@ -16,20 +16,17 @@ function ChatList({ setRoomId }: ChatListProps) {
     useCollectionState<ChatRoom>("chatRoom");
 
   const intoChatRoom = (id: string | undefined) => {
-    console.log("into");
     if (id) {
       setRoomId(id);
     }
   };
 
   const timeFormat = useCallback((time: Timestamp): string => {
-    console.log("````````````time````````````", time);
     if (!time) {
       return "";
     }
 
     const result = toTimeDistance(new Date(), time);
-    console.log("````````````result````````````", result);
     switch (result) {
       case "error":
         return "";
@@ -60,8 +57,8 @@ function ChatList({ setRoomId }: ChatListProps) {
       {chatRoomList.map((chat) => {
         const { docId, users, createdAt, chatList } = chat;
         return (
-          <Div>
-            <ChatWrap onClick={() => intoChatRoom(docId)} key={`room-${docId}`}>
+          <Div key={`room-${docId}`} onClick={() => intoChatRoom(docId)}>
+            <ChatWrap key={`room-${docId}`}>
               {/* 이미지컨테이너는 가변 그리드? */}
               <ProfileImages users={users} />
               <Contents>

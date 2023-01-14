@@ -25,7 +25,6 @@ function UserList({ setRoomId }: UserListProps) {
     useCollectionState<ChatRoom>("chatRoom");
   const [accountList, setAccountList] = useCollectionState<Account>("accounts");
 
-  console.log("````````````chatRoomList````````````", chatRoomList);
   const createChatRoom = async (
     uid: string,
     email: string,

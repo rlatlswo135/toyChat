@@ -1,11 +1,11 @@
 import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
 import tw from "tailwind-styled-components";
-import { ChatRoom, deleteChatRoom } from "../api/store";
-import { useDocState } from "../api/hook";
-import { postChatData } from "../api/store";
-import { AuthContext, useAuthContext } from "../provider/AuthProvider";
+import { ChatRoom, deleteChatRoom } from "../../api/store";
+import { useDocState } from "../../api/hook";
+import { postChatData } from "../../api/store";
+import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
-import { getNow } from "../api/util";
+import { getNow } from "../../api/util";
 
 type ChatProps = {
   roomId: string;

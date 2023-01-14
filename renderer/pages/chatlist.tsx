@@ -1,25 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import Header from "../components/Header";
 import tw from "tailwind-styled-components";
 import { UserList } from "../components/UserList";
 import { ChatList } from "../components/ChatList/ChatList";
-import { Chat } from "../components/Chat";
+import { Chat } from "../components/Chat/Chat";
 
 function chatList() {
   const router = useRouter();
-  const { currentUser, setIsLoading, isLoading } =
-    useAuthContext() as AuthContext;
+  const { currentUser } = useAuthContext() as AuthContext;
   const [roomId, setRoomId] = useState<string>("");
 
   // Todo redirect부분 -> 작업끝난후 주석해제
-  // useEffect(() => {
-  //   if (!currentUser) {
-  //     router.push("/home");
-  //     return;
-  //   }
-  // }, [currentUser]);
+  useEffect(() => {
+    if (!currentUser) {
+      router.push("/home");
+      return;
+    }
+  }, [currentUser]);
 
   return (
     <div className="flex flex-col h-full">

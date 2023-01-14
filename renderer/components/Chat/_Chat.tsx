@@ -1,7 +1,7 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React from "react";
 import tw from "tailwind-styled-components";
 import Image from "next/image";
-import profile from "../public/images/default.png";
+import profile from "../../public/images/default.png";
 
 interface MyChatProps {
   content: string;

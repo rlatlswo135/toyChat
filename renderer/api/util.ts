@@ -15,7 +15,6 @@ export const toTimeDistance = (now: Date, base: Timestamp): TimeDistance => {
     const BASE = base.toDate() as Date;
     const result = formatDistance(now, BASE);
 
-    console.log("````````````result````````````", result);
     if (result === "1 day") {
       return "1day";
     }
