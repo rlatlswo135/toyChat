@@ -17,10 +17,11 @@ import { toJson } from "./util";
 type Collection = "accounts" | "chatRoom";
 // state로 쓰기위해
 export const useCollectionState = <T>(
-  name: Collection
+  colName: Collection,
+  init: T[]
 ): [T[], Dispatch<SetStateAction<T[]>>] => {
-  const [docs, setDocs] = useState<T[]>([]);
-  const ref = collection(fbDb, name);
+  const [docs, setDocs] = useState<T[]>(init);
+  const ref = collection(fbDb, colName);
 
   useEffect(() => {
     onSnapshot(ref, (snapshot) => {
@@ -36,11 +37,13 @@ export const useCollectionState = <T>(
   return [docs, setDocs];
 };
 
+// Todo : initial로 next.js로 불러온거 넣고 그다음 snapShot계속
 export const useDocState = <T>(
   colName: Collection,
-  docId: string
-): [T | null, Dispatch<SetStateAction<T | null>>] => {
-  const [docData, setDocData] = useState<T | null>(null);
+  docId: string,
+  init: T
+): [T, Dispatch<SetStateAction<T>>] => {
+  const [docData, setDocData] = useState<T>(init);
   const ref = doc(fbDb, colName, docId);
 
   useEffect(() => {
@@ -56,7 +59,9 @@ export const useDocState = <T>(
 export const useDocData = async (collectionName: Collection, docId: string) => {
   try {
     const ref = doc(fbDb, collectionName, docId);
-    const docSnapShot = await getDoc(ref);
+    const result = await getDoc(ref);
+    console.log("````````````useDocData````````````", result.data());
+    return result.data();
   } catch (err) {
     console.error(err);
     return err;
@@ -88,9 +93,9 @@ export const usePostCollectionData = async <T>(
     const ref = collection(fbDb, name);
     const result = await addDoc(ref, data);
     return result;
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    return toJson(err);
+    return err;
   }
 };
 

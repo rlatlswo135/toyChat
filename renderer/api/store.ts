@@ -1,9 +1,4 @@
-import {
-  DocumentData,
-  WithFieldValue,
-  arrayUnion,
-  Timestamp,
-} from "firebase/firestore";
+import { WithFieldValue, arrayUnion, arrayRemove } from "firebase/firestore";
 import {
   useCollectionData,
   useDeleteDocData,
@@ -31,17 +26,31 @@ export type User = {
 export type Chat = {
   content: string;
   sendInfo: User;
-  createdAt: Timestamp;
+  createdAt: string;
 };
 
 export type ChatRoom = {
   docId?: string;
   chatList: Chat[];
   users: User[];
-  createdAt: Timestamp;
+  createdAt: string;
 };
 
 // ********************** chatroom
+export const getMyChatRoom = (
+  currentUser: User,
+  list: ChatRoom[]
+): ChatRoom[] => {
+  if (currentUser) {
+    const uid = currentUser.uid;
+    return list.filter((item) => {
+      const users = item.users.map((item) => item.uid);
+      return users.includes(uid);
+    });
+  }
+  return [];
+};
+
 export const getChatroomList = async () => {
   const result = await useCollectionData<ChatRoom>("chatRoom");
   return result;
@@ -61,6 +70,15 @@ export const postChatRoom = async (data: WithFieldValue<ChatRoom>) => {
 
 export const deleteChatRoom = async (docId: string) => {
   const result = await useDeleteDocData("chatRoom", docId);
+  return result;
+};
+
+export const deleteUserInChatRoom = async (docId: string, data: User) => {
+  const body = {
+    users: arrayRemove(data),
+  };
+  console.log("````````````body````````````", body);
+  const result = await useUpdateDocData("chatRoom", docId, body);
   return result;
 };
 

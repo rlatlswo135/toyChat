@@ -9,9 +9,11 @@ module.exports = {
   theme: {
     colors: {
       // use colors only specified
+      ...colors,
       white: colors.white,
       gray: colors.gray,
       blue: colors.blue,
+      logout: colors.gray[500],
       time: "rgb(209 213 219 / 0.3)",
     },
     extend: {},

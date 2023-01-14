@@ -8,9 +8,9 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { useRouter } from "next/router";
 import { onAuthStateChanged } from "firebase/auth";
 import { fbAuth } from "../api/auth";
-import { Account, getAccountList } from "../api/store";
 
 type ContextProps = {
   children: ReactNode;
@@ -32,37 +32,29 @@ export type AuthContext = {
 const authContext = createContext<AuthContext | null>(null);
 
 function AuthProvider({ children }: ContextProps) {
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [accountList, setAccountList] = useState<Account[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    async function fetchAndSet() {
-      const result = await getAccountList();
-      if (result && typeof result !== "string" && result.length) {
-        setAccountList(result);
+    setIsLoading(true);
+    if (currentUser) {
+      router.push("/chatlist");
+      setIsLoading(false);
+      return;
+    }
+    onAuthStateChanged(fbAuth, (user) => {
+      if (user && user.email && user.uid) {
+        setCurrentUser({
+          email: user.email,
+          uid: user.uid,
+          name: user.displayName || "",
+          image: user.photoURL,
+        });
       }
-    }
-
-    if (!accountList.length) {
-      fetchAndSet();
-    }
-
-    if (accountList) {
-      onAuthStateChanged(fbAuth, (user) => {
-        if (user && user.email && user.uid) {
-          setCurrentUser({
-            email: user.email,
-            uid: user.uid,
-            name: user.displayName || "",
-            image: user.photoURL,
-          });
-        } else {
-          setCurrentUser(null);
-        }
-      });
-    }
-  }, [accountList]);
+      setIsLoading(false);
+    });
+  }, [currentUser]);
 
   const value = useMemo(
     () => ({
@@ -70,6 +62,7 @@ function AuthProvider({ children }: ContextProps) {
       isLoading,
       setIsLoading,
     }),
+
     [currentUser, isLoading, setIsLoading]
   );
 

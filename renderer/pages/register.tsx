@@ -4,10 +4,14 @@ import Image from "next/image";
 import Head from "next/head";
 import Link from "next/link";
 import tw from "tailwind-styled-components";
-import { MyForm } from "../components/MyForm";
+import { ButtonWrap, MyForm } from "../components/MyForm";
 import { createAccount, fbAuth } from "../api/auth";
 import profile from "../public/images/default.png";
 import { LIMIT } from "../constants/image";
+import { MSG_PWD_CONFIRM } from "../constants/error";
+import { makeErrorMsg } from "../components/util/error";
+import { Spinner } from "../components/Spinner";
+import { HomeContentDiv, HomeDiv, Error, HomeTitleDiv } from "./home";
 
 type RegisterInfo = {
   email: string;
@@ -20,6 +24,8 @@ type RegisterInfo = {
 export default function register() {
   const router = useRouter();
   const imageRef = useRef<HTMLInputElement | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
   const [registerInfo, setRegisterInfo] = useState<RegisterInfo>({
     email: "",
     name: "",
@@ -34,7 +40,12 @@ export default function register() {
     return [
       { name: "email", value: email },
       { name: "name", value: name },
-      { name: "password", value: password, type: "password" },
+      {
+        name: "password",
+        value: password,
+        type: "password",
+        placeHolder: "password (최소 6자 이상)",
+      },
       { name: "passwordConfirm", value: passwordConfirm, type: "password" },
     ];
   }, [registerInfo]);
@@ -46,13 +57,23 @@ export default function register() {
 
   const submitHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    setErrMsg(null);
+    setLoading(true);
     const { email, password, passwordConfirm, name } = registerInfo;
+
     if (password !== passwordConfirm) {
-      console.log("같지않음");
+      setErrMsg(MSG_PWD_CONFIRM);
+      setLoading(false);
       return;
     }
-    await createAccount(fbAuth, email, name, password);
-    router.push("/home");
+    const result = await createAccount(fbAuth, email, name, password);
+    if (typeof result === "string") {
+      makeErrorMsg(result, setErrMsg);
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    router.push("/chatlist");
   };
 
   // Todo: Image를 수정후 uid를 넣어서 해줘야하니까 로그인 이후 마이페이지에서 수정하게끔 바꿔보자
@@ -69,21 +90,13 @@ export default function register() {
       setRegisterInfo((prev) => ({ ...prev, image: name }));
     }
   };
-
-  const resetImage = useCallback(
-    () => setRegisterInfo((prev) => ({ ...prev, image: "" })),
-    []
-  );
-
-  // ! 비밀번호 최소 6자 이상으로 해야함
-  // ! 가입 중복시 에러메시지
+  // Todo 가입 중복시 에러메시지
   return (
-    <>
+    <HomeDiv>
       <Head>toyChat</Head>
-      <RegisterDiv>
+      <HomeContentDiv>
         <div className="relative rounded-full w-60 h-60 p-5">
           <Image src={profile} className="w-full h-full rounded-full" />
-          {/* 이미지 바꾸는 부분 */}
           {/* {registerInfo.image && (
             <button
               title="cancel"
@@ -101,21 +114,24 @@ export default function register() {
             <AiFillCamera className="w-full h-full" />
           </button> */}
         </div>
-        <TitleDiv>Register</TitleDiv>
+        <HomeTitleDiv>Register</HomeTitleDiv>
         <MyForm
           formData={formData}
           changeHandler={changeHandler}
           submitHandler={submitHandler}
           submitText="Sign Up"
         />
-        <div>
+        <ButtonWrap>
           <Link href="/home">
-            <button>Go Home</button>
+            <button className="w-full h-full">Go Home</button>
           </Link>
-        </div>
-      </RegisterDiv>
+        </ButtonWrap>
+        {loading && <Spinner className="pt-5" />}
+        {errMsg && <Error>{errMsg}</Error>}
+      </HomeContentDiv>
       <input
         type="file"
+        minLength={6}
         style={{ display: "none" }}
         onChange={(e) => setImage(e)}
         placeholder="image"
@@ -125,14 +141,6 @@ export default function register() {
           }
         }}
       />
-    </>
+    </HomeDiv>
   );
 }
-
-const TitleDiv = tw.div`
-  p-12 text-7xl font-bold
-`;
-
-const RegisterDiv = tw.div`
-  flex flex-col justify-center items-center h-full
-`;

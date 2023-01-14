@@ -1,33 +1,27 @@
-import { Timestamp } from "firebase/firestore";
-import { useRouter } from "next/router";
-import React, { Dispatch, SetStateAction, useCallback } from "react";
+import Link from "next/link";
+import React, { useCallback } from "react";
 import tw from "tailwind-styled-components";
 import { useCollectionState } from "../../api/hook";
 import { ChatRoom } from "../../api/store";
-import { toTime, toTimeDistance, toYear, toDate } from "../../api/util";
+import { toTime, toTimeDistance, toYear, toDate, getNow } from "../../api/util";
 import { ProfileImages } from "./ProfileImages";
 
-function ChatList() {
-  // Todo 선택된 채팅있으면 LocalState하나 만들어서 있을시 Chat컴포넌트로 렌더하게
-  const router = useRouter();
-  const [chatRoomList, setChatRoomList] =
-    useCollectionState<ChatRoom>("chatRoom");
+type ChatListProps = {
+  init: ChatRoom[];
+};
+// Todo 선택된 채팅있으면 LocalState하나 만들어서 있을시 Chat컴포넌트로 렌더하게
+function ChatList({ init }: ChatListProps) {
+  const [chatRoomList, setChatRoomList] = useCollectionState<ChatRoom>(
+    "chatRoom",
+    init
+  );
 
-  const intoChatRoom = (id: string | undefined) => {
-    if (id) {
-      router.push({
-        pathname: `${router.pathname}/chat`,
-        query: { id },
-      });
-    }
-  };
-
-  const timeFormat = useCallback((time: Timestamp): string => {
+  const timeFormat = useCallback((time: string): string => {
     if (!time) {
       return "";
     }
 
-    const result = toTimeDistance(new Date(), time);
+    const result = toTimeDistance(getNow(), time);
     switch (result) {
       case "error":
         return "";
@@ -58,31 +52,40 @@ function ChatList() {
       {chatRoomList.map((chat) => {
         const { docId, users, createdAt, chatList } = chat;
         return (
-          <Div key={`room-${docId}`} onClick={() => intoChatRoom(docId)}>
-            <ChatWrap key={`room-${docId}`}>
-              {/* 이미지컨테이너는 가변 그리드? */}
-              <ProfileImages users={users} />
-              <Contents>
-                <p className="p-1 tracking-wide font-semibold text-2xl">
-                  {users
-                    .map((item) => item.name)
-                    .slice(0, 4)
-                    .join(",")}
-                  <span className="ml-3 text-sm text-gray-400">
-                    {users.length}
-                  </span>
-                </p>
-                <p className="flex-1 p-1 text-gray-300/80">
-                  {chatList.at(-1)?.content}
-                </p>
-              </Contents>
-            </ChatWrap>
-            <span className="text-time">
-              {chatList.length
-                ? timeFormat(chatList[chatList.length - 1].createdAt)
-                : timeFormat(createdAt)}
-            </span>
-          </Div>
+          <Link
+            key={`room-${docId}`}
+            href={{ pathname: "/chat", query: { id: docId } }}
+          >
+            <Div>
+              <ChatWrap key={`room-${docId}`}>
+                {/* 이미지컨테이너는 가변 그리드? */}
+                <ProfileImages users={users} />
+                <Contents>
+                  <p className="p-1 tracking-wide font-semibold text-2xl">
+                    {users
+                      .map((item) => item.name)
+                      .slice(0, 4)
+                      .join(",")}
+                    <span className="ml-3 text-sm text-gray-400">
+                      {users.length}
+                    </span>
+                  </p>
+                  <p className="flex-1 p-1 text-gray-300/80">
+                    {chatList.at(-1)?.content ? (
+                      <span>{chatList.at(-1)?.content}</span>
+                    ) : (
+                      <span>&nbsp;</span>
+                    )}
+                  </p>
+                </Contents>
+              </ChatWrap>
+              <span className="text-time">
+                {chatList.length
+                  ? timeFormat(chatList[chatList.length - 1].createdAt)
+                  : timeFormat(createdAt)}
+              </span>
+            </Div>
+          </Link>
         );
       })}
 

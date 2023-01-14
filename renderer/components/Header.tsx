@@ -1,17 +1,23 @@
 import React, { useCallback } from "react";
+import { useRouter } from "next/router";
 import tw from "tailwind-styled-components";
 import { logOutAccount, fbAuth } from "../api/auth";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 
 function Header() {
-  const { currentUser, setIsLoading, isLoading } =
-    useAuthContext() as AuthContext;
+  const router = useRouter();
+  const { currentUser } = useAuthContext() as AuthContext;
 
-  const logOutHandler = useCallback(() => {
+  const logOutHandler = useCallback(async () => {
+    console.log("````````````currentUser````````````", currentUser);
     if (currentUser) {
-      logOutAccount(fbAuth, currentUser.email);
+      const result = await logOutAccount(fbAuth, currentUser.email);
+      if (typeof result === "string") {
+        return;
+      }
+      router.push("/home");
     }
-  }, []);
+  }, [currentUser]);
 
   return (
     <HeaderWrap>

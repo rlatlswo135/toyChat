@@ -10,10 +10,9 @@ type TimeDistance =
   | "year"
   | "error";
 
-export const toTimeDistance = (now: Date, base: Timestamp): TimeDistance => {
+export const toTimeDistance = (now: string, base: string): TimeDistance => {
   try {
-    const BASE = base.toDate() as Date;
-    const result = formatDistance(now, BASE);
+    const result = formatDistance(new Date(now), new Date(base));
 
     if (result === "1 day") {
       return "1day";
@@ -42,22 +41,15 @@ export const toTimeDistance = (now: Date, base: Timestamp): TimeDistance => {
   }
 };
 
-export const getNow = (): Timestamp => Timestamp.now();
-
-export const toTime = (time: Timestamp) => {
-  const TIME = time.toDate() as Date;
-  const [formatTime, afterTw] = format(TIME, "p").split(" ");
+export const toTime = (time: string) => {
+  const [formatTime, afterTw] = format(new Date(time), "p").split(" ");
 
   if (afterTw === "AM") return `오전 ${formatTime}`;
   return `오후 ${formatTime}`;
 };
-export const toDate = (time: Timestamp) => {
-  const TIME = time.toDate() as Date;
-  return format(TIME, "MM-dd");
-};
-export const toYear = (time: Timestamp) => {
-  const TIME = time.toDate() as Date;
-  return format(TIME, "yyyy-MM-dd");
-};
 
+export const toDate = (time: string) => format(new Date(time), "MM-dd");
+export const toYear = (time: string) => format(new Date(time), "yyyy-MM-dd");
+
+export const getNow = () => format(new Date(), "yyyy-MM-dd");
 export const toJson = <T>(item: T): string => JSON.stringify(item);

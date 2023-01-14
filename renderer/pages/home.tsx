@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 import Head from "next/head";
 import Link from "next/link";
 import { MyForm } from "../components/MyForm";
 import { fbAuth, loginAccount } from "../api/auth";
 import { useRouter } from "next/router";
-import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import { ButtonWrap } from "../components/MyForm";
+import { Spinner } from "../components/Spinner";
+import {
+  AUTH_NOTFOUND,
+  AUTH_REQUEST_FAIL,
+  AUTH_WRONG_PWD,
+} from "../constants/error";
+import { AuthContext, useAuthContext } from "../provider/AuthProvider";
+import { makeErrorMsg } from "../components/util/error";
 
 type LoginInfo = {
   email: string;
@@ -15,9 +22,9 @@ type LoginInfo = {
 
 function Home() {
   // Todo 계정 틀릴시 에러메시지
-  const router = useRouter();
-  const { setIsLoading } = useAuthContext() as AuthContext;
-
+  const { isLoading } = useAuthContext() as AuthContext;
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
   const [loginInfo, setLoginInfo] = useState<LoginInfo>({
     email: "",
     password: "",
@@ -35,18 +42,24 @@ function Home() {
   };
 
   const signIn = async (e: React.SyntheticEvent) => {
+    setLoading(true);
+    setErrMsg(null);
     e.preventDefault();
     const { email, password } = loginInfo;
-    await loginAccount(fbAuth, email, password);
-    setIsLoading(false);
-    router.push("/chatlist");
+    const result = await loginAccount(fbAuth, email, password);
+
+    console.log("````````````result````````````", result);
+    if (typeof result === "string") {
+      makeErrorMsg(result, setErrMsg);
+    }
+    setLoading(false);
   };
 
   return (
-    <>
+    <HomeDiv>
       <Head>toyChat</Head>
-      <LoginDiv>
-        <TitleDiv>Toy - Chat</TitleDiv>
+      <HomeContentDiv>
+        <HomeTitleDiv>Toy - Chat</HomeTitleDiv>
         <MyForm
           formData={formData}
           changeHandler={changeHandler}
@@ -58,17 +71,27 @@ function Home() {
             <button className="w-full h-full">Sign Up</button>
           </Link>
         </ButtonWrap>
-      </LoginDiv>
-    </>
+        {(loading || isLoading) && <Spinner className="pt-5" />}
+        {errMsg && <Error>{errMsg}</Error>}
+      </HomeContentDiv>
+    </HomeDiv>
   );
 }
 
 export default Home;
 
-const TitleDiv = tw.div`
+export const HomeDiv = tw.div`
+flex h-full flex-col justify-center items-center
+`;
+
+export const HomeTitleDiv = tw.div`
   p-12 text-7xl font-bold
 `;
 
-const LoginDiv = tw.div`
-  flex flex-col justify-center items-center h-full
+export const HomeContentDiv = tw.div`
+flex flex-col items-center justify-center w-full h-full
+`;
+
+export const Error = tw.span`
+text-xl pt-5 text-red-500 font-bold
 `;

@@ -1,25 +1,40 @@
-import React, { useCallback, useState } from "react";
-import PuffLoader from "react-spinners/PuffLoader";
+import React, { useCallback, useEffect, useState } from "react";
+import { onSnapshot } from "firebase/firestore";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { ImExit } from "react-icons/im";
+import { FcInvite } from "react-icons/fc";
+import { RiCloseLine } from "react-icons/ri";
 import tw from "tailwind-styled-components";
-import { ChatRoom, deleteChatRoom } from "../../api/store";
-import { useDocState } from "../../api/hook";
+import {
+  ChatRoom,
+  deleteChatRoom,
+  deleteUserInChatRoom,
+} from "../../api/store";
 import { postChatData } from "../../api/store";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
 import { getNow } from "../../api/util";
 import { useRouter } from "next/router";
-
-type ChatProps = {
-  roomId: string;
-};
+import { Spinner } from "../Spinner";
+import { useDocState } from "../../api/hook";
 
 // Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
+type ChatProps = {
+  init: ChatRoom;
+  roomId: string;
+};
 // 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
-function Chat({ roomId }: ChatProps) {
+function Chat({ init, roomId }: ChatProps) {
   const router = useRouter();
   const { currentUser } = useAuthContext() as AuthContext;
-  const [roomInfo] = useDocState<ChatRoom>("chatRoom", roomId);
+  const [roomInfo, setRoomInfo] = useDocState<ChatRoom>(
+    "chatRoom",
+    roomId,
+    init
+  );
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [chatContent, setChatContent] = useState<string>("");
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -40,34 +55,70 @@ function Chat({ roomId }: ChatProps) {
     }
   };
 
-  const exitChat = useCallback(() => router.push("/chatlist"), []);
+  const toggleMenuHandler = useCallback(
+    () => setIsMenuOpen((prev) => !prev),
+    []
+  );
 
-  const deleteChat = useCallback(() => {
-    deleteChatRoom(roomId);
-    router.push("/chatlist");
-  }, [roomId]);
+  // Todo 채팅방에 나혼자일시 Delete 혼자가아니면 Exit
+  const exitChat = useCallback(() => {
+    if (roomInfo) {
+      const roomUsers = roomInfo?.users;
+      if (roomUsers.length === 1 && roomUsers[0].uid === currentUser?.uid) {
+        deleteChatRoom(roomId);
+      } else {
+        if (currentUser) {
+          console.log("나가기");
+          deleteUserInChatRoom(roomId, { ...currentUser });
+        }
+      }
+      router.push("/chatlist");
+    }
+  }, [roomInfo]);
 
-  if (!roomInfo) {
-    return (
-      <div className="flex h-full justify-center items-center">
-        <PuffLoader size={300} />
-      </div>
-    );
+  const goChatList = useCallback(() => router.push("/chatlist"), [roomId]);
+
+  if (loading || !roomInfo) {
+    return <Spinner />;
   }
 
   return (
     <Div>
       <div className="flex-1 overflow-y-auto">
-        <header className="py-4 px-8 flex justify-between border-b-2 border-gray-400/20 text-l font-bold tracking-wide">
-          <button onClick={exitChat}>&larr;</button>
-          <span>{`${roomInfo.users.map((user) => user.name).join(",")}`}</span>
-          <button onClick={deleteChat}>Menu</button>
-        </header>
+        <ChatHeader>
+          <div className="flex justify-between">
+            <button onClick={goChatList}>&larr;</button>
+            <span>{`${roomInfo.users
+              .map((user) => user.name)
+              .join(",")}`}</span>
+            <div>
+              <button title="menu" onClick={toggleMenuHandler}>
+                {isMenuOpen ? (
+                  <RiCloseLine className="w-5 h-5" />
+                ) : (
+                  <GiHamburgerMenu className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+          </div>
+          {isMenuOpen && (
+            <Menus>
+              <Menu>
+                <FcInvite className="w-5 h-5" />
+                <span className="ml-3">Invite User</span>
+              </Menu>
+              <Menu onClick={exitChat}>
+                <ImExit className="w-5 h-5" />
+                <span className="ml-3">Exit</span>
+              </Menu>
+            </Menus>
+          )}
+        </ChatHeader>
         {/* 채팅박스 */}
-        <div className="flex pt-2 justify-center text-time text-[0.9em]">
+        <TimeStamp>
           <span>timeStamp 00:00</span>
-        </div>
-        <div id="chatWrap" className="px-3">
+        </TimeStamp>
+        <ChatWrap>
           {roomInfo.chatList.map((chat, idx) => {
             const {
               content,
@@ -92,19 +143,16 @@ function Chat({ roomId }: ChatProps) {
               />
             );
           })}
-        </div>
+        </ChatWrap>
       </div>
       <form className="p-1" onSubmit={submitHandler}>
-        <input
-          className="rounded-xl w-[90%] h-10 px-5 outline-none bg-gray-400 placeholder:text-white/30"
+        <ChatInput
           placeholder="Put Your Message...."
           type="text"
           value={chatContent}
           onChange={(e) => changeHandler(e)}
         />
-        <button className="text-m w-[10%] font-bold bg-gray-500 h-full rounded-xl">
-          Send
-        </button>
+        <SendBtn>Send</SendBtn>
       </form>
     </Div>
   );
@@ -114,4 +162,32 @@ export { Chat };
 
 const Div = tw.div`
   flex relative flex-col w-full h-full
+`;
+
+const ChatHeader = tw.header`
+py-4 px-8 border-b-2 border-gray-400/20 text-l font-bold tracking-wide
+`;
+
+const TimeStamp = tw.div`
+flex pt-2 justify-center text-time text-[0.9em]
+`;
+
+const ChatWrap = tw.div`
+px-3
+`;
+
+const ChatInput = tw.input`
+rounded-xl w-[90%] h-10 px-5 outline-none bg-gray-400 placeholder:text-white/30
+`;
+
+const SendBtn = tw.button`
+text-m w-[10%] font-bold bg-gray-500 h-full rounded-xl
+`;
+
+const Menus = tw.ul`
+absolute border-2 flex flex-col left-3/4 max-w-52 w-52 border-gray-400/20 bg-gray-400/80
+`;
+
+const Menu = tw.li`
+flex items-center py-2 px-8 border-b-2 text-center border-gray-500/70 hover:bg-gray-500 hover:cursor-pointer
 `;

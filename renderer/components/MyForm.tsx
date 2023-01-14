@@ -6,6 +6,7 @@ type FormData = {
   value: string;
   type?: string;
   onBlur?: () => void;
+  placeHolder?: string;
 };
 
 type MyFormProps = {
@@ -24,7 +25,7 @@ export function MyForm({
   return (
     <form onSubmit={submitHandler}>
       {formData.map((form) => {
-        const { name, value, type, onBlur } = form;
+        const { name, value, type, onBlur, placeHolder } = form;
 
         return (
           <div className="m-5 w-96" key={`form-${name}`}>
@@ -35,7 +36,7 @@ export function MyForm({
               name={name}
               onChange={changeHandler}
               onBlur={onBlur}
-              placeholder={name}
+              placeholder={placeHolder || name}
               value={value}
             />
           </div>

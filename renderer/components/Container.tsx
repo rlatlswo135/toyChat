@@ -9,7 +9,7 @@ export function Container({ children }: ContainerProps) {
   return (
     <div
       id="container"
-      className="flex flex-col max-h-screen h-screen w-screen overflow-auto"
+      className="flex flex-col max-h-screen h-screen w-screen overflow-auto relative"
     >
       {children}
     </div>

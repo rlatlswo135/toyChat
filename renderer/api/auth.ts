@@ -1,5 +1,4 @@
 import { fbApp, fbDb } from "./firebase";
-import { NextResponse, NextRequest } from "next/server";
 import {
   Auth,
   getAuth,
@@ -18,8 +17,10 @@ const loginAccount = async (auth: Auth, email: string, password: string) => {
     await fbAuth.setPersistence(browserLocalPersistence);
     const data = await signInWithEmailAndPassword(auth, email, password);
     changeLoginState(email, true);
-  } catch (err) {
+    return data;
+  } catch (err: any) {
     console.error(err);
+    return err.code;
   }
 };
 
@@ -30,25 +31,23 @@ const createAccount = async (
   password: string
 ) => {
   try {
-    if (password.length < 6) {
-      console.log("password 더길게");
-      return;
-    }
     const { user } = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
 
-    await updateProfile(user, { displayName: name, photoURL: "" });
-    usePostCollectionData("accounts", {
+    const test = await updateProfile(user, { displayName: name, photoURL: "" });
+    const result = await usePostCollectionData("accounts", {
       uid: user.uid,
       email: user.email,
       name: name,
       image: "",
     });
-  } catch (err) {
+    return result;
+  } catch (err: any) {
     console.error(err);
+    return err.code;
   }
 };
 
@@ -56,9 +55,10 @@ const logOutAccount = async (auth: Auth, email: string) => {
   try {
     const data = await auth.signOut();
     changeLoginState(email, false);
-    console.log("````````````logout - data````````````", data);
-  } catch (err) {
+    return data;
+  } catch (err: any) {
     console.error(err);
+    return err.code;
   }
 };
 
