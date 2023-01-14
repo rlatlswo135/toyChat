@@ -1,10 +1,5 @@
-import React, {
-  useEffect,
-  useState,
-  useLayoutEffect,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { Dispatch, SetStateAction } from "react";
+import { isEqual } from "lodash";
 import tw from "tailwind-styled-components";
 import Image from "next/image";
 import { useCollectionState } from "../api/hook";
@@ -12,13 +7,14 @@ import { Account, ChatRoom, postChatRoom, User } from "../api/store";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import profile from "../public/images/default.png";
 import { getNow, toJson } from "../api/util";
-import { Timestamp } from "firebase/firestore";
+import { useRouter } from "next/router";
 
 type UserListProps = {
   setRoomId: Dispatch<SetStateAction<string>>;
 };
 
-function UserList({ setRoomId }: UserListProps) {
+function UserList() {
+  const router = useRouter();
   const { currentUser } = useAuthContext() as AuthContext;
 
   const [chatRoomList, setChatRoomList] =
@@ -39,11 +35,27 @@ function UserList({ setRoomId }: UserListProps) {
         users.push({ image, email, name, uid });
       }
 
+      console.log(
+        "````````````test````````````",
+        chatRoomList
+          .map((room) => room.users)
+          .filter((item) => isEqual(item, users)).length
+      );
       // ** 유저리스트가 중복되는 방이면 생성X
-      if (
-        chatRoomList.map((room) => toJson(room.users)).includes(toJson(users))
-      ) {
-        console.log("이미 방 존재");
+      const findExistRoomIndex = chatRoomList
+        .map((room) => room.users)
+        .findIndex((item) => isEqual(item, users));
+
+      // Todo 그 방으로 redirect 시켜야할듯
+      if (findExistRoomIndex >= 0) {
+        // router.push가 중복이 많은것같으니 커스텀훅을 만드는것도 좋을지도
+        const id = chatRoomList[findExistRoomIndex].docId;
+        if (id) {
+          router.push({
+            pathname: `${router.pathname}/chat`,
+            query: { id: chatRoomList[findExistRoomIndex].docId },
+          });
+        }
         return;
       }
 
@@ -54,7 +66,10 @@ function UserList({ setRoomId }: UserListProps) {
       });
 
       if (newRoom) {
-        setRoomId(newRoom.id);
+        router.push({
+          pathname: `${router.pathname}/chat`,
+          query: { id: newRoom.id },
+        });
       }
     }
   };

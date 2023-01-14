@@ -14,8 +14,6 @@ type LoginInfo = {
 };
 
 function Home() {
-  // 커스텀훅으로 changeHandler까지 해도 될듯
-
   // Todo 계정 틀릴시 에러메시지
   const router = useRouter();
   const { setIsLoading } = useAuthContext() as AuthContext;

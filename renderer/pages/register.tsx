@@ -81,7 +81,7 @@ export default function register() {
     <>
       <Head>toyChat</Head>
       <RegisterDiv>
-        <div className="relative border-2 rounded-full w-60 h-60 p-5">
+        <div className="relative rounded-full w-60 h-60 p-5">
           <Image src={profile} className="w-full h-full rounded-full" />
           {/* 이미지 바꾸는 부분 */}
           {/* {registerInfo.image && (

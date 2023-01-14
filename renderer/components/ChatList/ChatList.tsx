@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction, useCallback } from "react";
 import tw from "tailwind-styled-components";
 import { useCollectionState } from "../../api/hook";
@@ -6,18 +7,18 @@ import { ChatRoom } from "../../api/store";
 import { toTime, toTimeDistance, toYear, toDate } from "../../api/util";
 import { ProfileImages } from "./ProfileImages";
 
-type ChatListProps = {
-  setRoomId: Dispatch<SetStateAction<string>>;
-};
-function ChatList({ setRoomId }: ChatListProps) {
+function ChatList() {
   // Todo 선택된 채팅있으면 LocalState하나 만들어서 있을시 Chat컴포넌트로 렌더하게
-
+  const router = useRouter();
   const [chatRoomList, setChatRoomList] =
     useCollectionState<ChatRoom>("chatRoom");
 
   const intoChatRoom = (id: string | undefined) => {
     if (id) {
-      setRoomId(id);
+      router.push({
+        pathname: `${router.pathname}/chat`,
+        query: { id },
+      });
     }
   };
 

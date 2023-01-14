@@ -45,7 +45,6 @@ export const useDocState = <T>(
 
   useEffect(() => {
     onSnapshot(ref, (snapshot: DocumentData) => {
-      console.log("````````````snapshot````````````", snapshot);
       setDocData(snapshot.data());
     });
   }, []);
@@ -58,8 +57,6 @@ export const useDocData = async (collectionName: Collection, docId: string) => {
   try {
     const ref = doc(fbDb, collectionName, docId);
     const docSnapShot = await getDoc(ref);
-
-    console.log("`````````````docSnapShot```````````", docSnapShot);
   } catch (err) {
     console.error(err);
     return err;

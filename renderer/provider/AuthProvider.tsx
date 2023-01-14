@@ -5,13 +5,11 @@ import React, {
   SetStateAction,
   useContext,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { fbAuth } from "../api/auth";
-import { getUserList } from "../api/firebase";
 import { Account, getAccountList } from "../api/store";
 
 type ContextProps = {
@@ -41,10 +39,11 @@ function AuthProvider({ children }: ContextProps) {
   useEffect(() => {
     async function fetchAndSet() {
       const result = await getAccountList();
-      if (result && result.length) {
+      if (result && typeof result !== "string" && result.length) {
         setAccountList(result);
       }
     }
+
     if (!accountList.length) {
       fetchAndSet();
     }

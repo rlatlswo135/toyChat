@@ -1,4 +1,5 @@
-import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
+import PuffLoader from "react-spinners/PuffLoader";
 import tw from "tailwind-styled-components";
 import { ChatRoom, deleteChatRoom } from "../../api/store";
 import { useDocState } from "../../api/hook";
@@ -6,16 +7,17 @@ import { postChatData } from "../../api/store";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
 import { getNow } from "../../api/util";
+import { useRouter } from "next/router";
 
 type ChatProps = {
   roomId: string;
-  setRoomId: Dispatch<SetStateAction<string>>;
 };
 
 // Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
 // 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
-function Chat({ roomId, setRoomId }: ChatProps) {
+function Chat({ roomId }: ChatProps) {
+  const router = useRouter();
   const { currentUser } = useAuthContext() as AuthContext;
   const [roomInfo] = useDocState<ChatRoom>("chatRoom", roomId);
   const [chatContent, setChatContent] = useState<string>("");
@@ -34,33 +36,28 @@ function Chat({ roomId, setRoomId }: ChatProps) {
         createdAt: getNow(),
       };
       postChatData(roomId, data);
-      console.log("````````````sendChat````````````");
       setChatContent("");
     }
   };
 
-  const exitChat = useCallback(() => setRoomId(""), []);
+  const exitChat = useCallback(() => router.push("/chatlist"), []);
 
   const deleteChat = useCallback(() => {
     deleteChatRoom(roomId);
-    setRoomId("");
+    router.push("/chatlist");
   }, [roomId]);
 
-  console.log("````````````roomInfo````````````", roomInfo);
-
   if (!roomInfo) {
-    return <div>Loading</div>;
+    return (
+      <div className="flex h-full justify-center items-center">
+        <PuffLoader size={300} />
+      </div>
+    );
   }
 
   return (
     <Div>
       <div className="flex-1 overflow-y-auto">
-        {/* <button
-          onClick={exitChat}
-          className="absolute top-2 left-[97%] text-xl font-bold opacity-50 z-50 hover:text-gray-900"
-        >
-          x
-        </button> */}
         <header className="py-4 px-8 flex justify-between border-b-2 border-gray-400/20 text-l font-bold tracking-wide">
           <button onClick={exitChat}>&larr;</button>
           <span>{`${roomInfo.users.map((user) => user.name).join(",")}`}</span>
