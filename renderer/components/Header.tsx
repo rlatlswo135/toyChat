@@ -1,45 +1,58 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import tw from "tailwind-styled-components";
 import { logOutAccount, fbAuth } from "../api/auth";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
-import Link from "next/link";
 
 function Header() {
   const router = useRouter();
+  const [title, setTitle] = useState<string>("");
   const { currentUser } = useAuthContext() as AuthContext;
 
-  const logOutHandler = useCallback(async () => {
-    console.log("````````````currentUser````````````", currentUser);
-    if (currentUser) {
-      const result = await logOutAccount(fbAuth, currentUser.email);
-      if (typeof result === "string") {
-        return;
-      }
-      router.push("/home");
+  useEffect(() => {
+    switch (router.pathname) {
+      case "/users":
+        setTitle("유저");
+        break;
+      case "/chatlist":
+        setTitle("채팅");
+        break;
+      default:
+        setTitle("메뉴");
     }
+  }, [router.pathname]);
+
+  const logOutHandler = useCallback(async () => {
+    if (!currentUser) {
+      router.push("/home");
+      return;
+    }
+
+    const result = await logOutAccount(fbAuth, currentUser.email);
+    if (typeof result === "string") {
+      return;
+    }
+    router.push("/home");
   }, [currentUser]);
 
   return (
-    <Container>
-      <Menus>
-        <button className="text-xl font-bold" onClick={logOutHandler}>
-          Sign out
-        </button>
-      </Menus>
-      <Title>Welcom to Toy Chat</Title>
-    </Container>
+    <div className="flex justify-between p-4">
+      <MenuTitle>{title}</MenuTitle>
+      <MenuWrap className="flex">
+        <Menu onClick={logOutHandler}>Logout</Menu>
+      </MenuWrap>
+    </div>
   );
 }
 
 export default Header;
 
-const Container = tw.header`
-flex flex-col w-full justify-end
+const MenuTitle = tw.h1`
+font-bold text-xl
 `;
-const Menus = tw.div`
-flex items-start justify-end h-20
+const MenuWrap = tw.ul`
+  flex
 `;
-const Title = tw.h1`
-pt-24 py-12 text-center text-8xl font-bold
+const Menu = tw.li`
+p-2 hover:cursor-pointer hover:bg-hover rounded-xl
 `;

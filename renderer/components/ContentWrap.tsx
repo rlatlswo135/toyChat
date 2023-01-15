@@ -1,7 +1,8 @@
 import Link from "next/link";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
+import { useRouter } from "next/router";
 import tw from "tailwind-styled-components";
-import Header from "./Header";
+import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import { Nav } from "./Nav";
 
 type ContentWrapProps = {
@@ -9,12 +10,26 @@ type ContentWrapProps = {
 };
 
 export function ContentWrap({ children }: ContentWrapProps) {
+  const router = useRouter();
+  const { currentUser, isLoading } = useAuthContext() as AuthContext;
+
+  useEffect(() => {
+    if (!currentUser) {
+      router.push("/home");
+    }
+  }, []);
+
   return (
     <Div>
-      <Header />
+      <div className="flex flex-col w-full justify-end">
+        <Title>Welcom to Toy Chat</Title>
+      </div>
       <Wrap>
         <Nav />
-        <ComponentWrap>{children}</ComponentWrap>
+        <ComponentWrap>
+          {/* <Header /> */}
+          <Content>{children}</Content>
+        </ComponentWrap>
       </Wrap>
     </Div>
   );
@@ -23,10 +38,15 @@ export function ContentWrap({ children }: ContentWrapProps) {
 const Div = tw.div`
 flex flex-col h-full
 `;
-
+const Title = tw.h1`
+pt-24 py-12 text-center text-8xl font-bold
+`;
 const Wrap = tw.div`
 flex flex-1 overflow-x-hidden rounded-xl
 `;
 const ComponentWrap = tw.div`
-flex bg-gray-400/25 max-w-full max-h-full w-full overflow-y-auto
+flex flex-col bg-gray-400/25 max-w-full max-h-full w-full overflow-y-auto
+`;
+const Content = tw.div`
+flex flex-col w-full mb-2 h-full
 `;

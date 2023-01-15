@@ -11,19 +11,35 @@ import { ContentWrap } from "../components/ContentWrap";
 function MyApp({ router, Component, pageProps }: AppProps) {
   const { pageLoading } = usePageLoading();
   const pathName = router.pathname;
-  return (
-    <Container>
-      {["/chatlist", "/chat", "/home", "/users"].includes(pathName) ? (
-        <AuthProvider>
-          <ContentWrap>
+
+  const routes = () => {
+    switch (pathName) {
+      case "/home":
+        return (
+          <AuthProvider>
             {pageLoading ? <Spinner /> : <Component {...pageProps} />}
-          </ContentWrap>
-        </AuthProvider>
-      ) : (
-        <Component {...pageProps} />
-      )}
-    </Container>
-  );
+          </AuthProvider>
+        );
+      case "/register":
+        return <Component {...pageProps} />;
+      default:
+        return (
+          <AuthProvider>
+            <ContentWrap>
+              {pageLoading ? (
+                <Spinner />
+              ) : (
+                <>
+                  {pathName !== "/chat" && <Header />}
+                  <Component {...pageProps} />
+                </>
+              )}
+            </ContentWrap>
+          </AuthProvider>
+        );
+    }
+  };
+  return <Container>{routes()}</Container>;
 }
 
 export default MyApp;

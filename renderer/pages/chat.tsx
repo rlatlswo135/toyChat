@@ -1,74 +1,30 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
+import tw from "tailwind-styled-components";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 import { Chat } from "../components/Chat/Chat";
-import {
-  Account,
-  ChatRoom,
-  getAccountList,
-  getChatRoomInfo,
-  getChatroomList,
-} from "../api/store";
-import { ChatMain } from "../components/ChatMain";
-import { Spinner } from "../components/Spinner";
+import { ChatRoom, getChatRoomInfo } from "../api/store";
 
 type Chat = {
   roomId: string;
   initRoomInfo: ChatRoom;
-  initChatRoomList: ChatRoom[];
-  initAccountList: Account[];
-  pageLoading: boolean;
 };
 
-function chat({
-  initChatRoomList,
-  initAccountList,
-  initRoomInfo,
-  roomId,
-  pageLoading,
-}: Chat) {
-  const router = useRouter();
-
-  return <div>chat</div>;
-
-  if (typeof router.query.id === "string") {
-    return (
-      <ChatMain initUserList={initAccountList} initChatRoom={initChatRoomList}>
-        {pageLoading ? (
-          <Spinner className="flex flex-col justify-center items-center w-full h-full">
-            <span className="text-xl font-bold pt-5 text-center">
-              ChatList...
-            </span>
-          </Spinner>
-        ) : (
-          <Chat init={initRoomInfo} roomId={roomId} />
-        )}
-      </ChatMain>
-    );
-  }
-
-  return <div>Error!</div>;
+function chat({ initRoomInfo, roomId }: Chat) {
+  return <Chat initRoomInfo={initRoomInfo} roomId={roomId} />;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
-  query,
-  req,
-  res,
-}) => {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const roomId = query.id;
   if (typeof roomId === "string") {
-    const initChatRoomList = await getChatroomList();
-    const initAccountList = await getAccountList();
     const initRoomInfo = (await getChatRoomInfo(roomId)) as ChatRoom;
     return {
       props: {
         roomId,
-        initChatRoomList,
         initRoomInfo,
-        initAccountList,
       },
     };
   }
+
   return {
     props: {
       roomInfo: null,
@@ -77,3 +33,35 @@ export const getServerSideProps: GetServerSideProps = async ({
 };
 
 export default chat;
+
+const Div = tw.div`
+  flex relative flex-col w-full h-full
+`;
+
+const ChatHeader = tw.header`
+py-4 px-8 border-b-2 border-gray-400/20 text-l font-bold tracking-wide
+`;
+
+const TimeStamp = tw.div`
+flex pt-2 justify-center text-time text-[0.9em]
+`;
+
+const ChatWrap = tw.div`
+px-3
+`;
+
+const ChatInput = tw.input`
+rounded-xl w-[90%] h-10 px-5 outline-none bg-gray-400 placeholder:text-white/30
+`;
+
+const SendBtn = tw.button`
+text-m w-[10%] font-bold bg-gray-500 h-full rounded-xl
+`;
+
+const Menus = tw.ul`
+absolute border-2 flex flex-col left-3/4 max-w-52 w-52 border-gray-400/20 bg-gray-400/80
+`;
+
+const Menu = tw.li`
+flex items-center py-2 px-8 border-b-2 text-center border-gray-500/70 hover:bg-gray-500 hover:cursor-pointer
+`;

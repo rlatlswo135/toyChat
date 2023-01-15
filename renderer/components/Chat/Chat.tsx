@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { onSnapshot } from "firebase/firestore";
+import React, { useCallback, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { ImExit } from "react-icons/im";
 import { FcInvite } from "react-icons/fc";
@@ -15,30 +14,33 @@ import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
 import { getNow } from "../../api/util";
 import { useRouter } from "next/router";
-import { Spinner } from "../Spinner";
 import { useDocState } from "../../api/hook";
 
 // Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
 type ChatProps = {
-  init: ChatRoom;
+  initRoomInfo: ChatRoom;
   roomId: string;
 };
 // 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
-function Chat({ init, roomId }: ChatProps) {
+function Chat({ initRoomInfo, roomId }: ChatProps) {
   const router = useRouter();
   const { currentUser } = useAuthContext() as AuthContext;
   const [roomInfo, setRoomInfo] = useDocState<ChatRoom>(
     "chatRoom",
     roomId,
-    init
+    initRoomInfo
   );
-  const [loading, setLoading] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [chatContent, setChatContent] = useState<string>("");
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
     setChatContent(e.target.value);
+
+  const toggleMenuHandler = useCallback(
+    () => setIsMenuOpen((prev) => !prev),
+    []
+  );
 
   const submitHandler = (e: React.SyntheticEvent) => {
     // Todo 챗전달후 포커스 아래로 + 빠르게보낼시 안보내지는거 확인 (실제데이터 들어가는지까지)
@@ -55,12 +57,6 @@ function Chat({ init, roomId }: ChatProps) {
     }
   };
 
-  const toggleMenuHandler = useCallback(
-    () => setIsMenuOpen((prev) => !prev),
-    []
-  );
-
-  // Todo 채팅방에 나혼자일시 Delete 혼자가아니면 Exit
   const exitChat = useCallback(() => {
     if (roomInfo) {
       const roomUsers = roomInfo?.users;
@@ -76,18 +72,12 @@ function Chat({ init, roomId }: ChatProps) {
     }
   }, [roomInfo]);
 
-  const goChatList = useCallback(() => router.push("/chatlist"), [roomId]);
-
-  if (loading || !roomInfo) {
-    return <Spinner />;
-  }
-
   return (
     <Div>
       <div className="flex-1 overflow-y-auto">
         <ChatHeader>
           <div className="flex justify-between">
-            <button onClick={goChatList}>&larr;</button>
+            <button onClick={() => router.push("/chatlist")}>&larr;</button>
             <span>{`${roomInfo.users
               .map((user) => user.name)
               .join(",")}`}</span>

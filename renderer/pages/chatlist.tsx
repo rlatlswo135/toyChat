@@ -5,6 +5,7 @@ import { GetServerSideProps } from "next";
 import { ChatRoom, getAccountList, getChatroomList } from "../api/store";
 import { useCollectionState } from "../api/hook";
 import { ProfileImages } from "../components/ChatList/ProfileImages";
+import { Empty } from "../components/Empty";
 
 type ChatList = {
   initChatRoomList: ChatRoom[];
@@ -17,11 +18,10 @@ function chatList({ initChatRoomList }: ChatList) {
   );
   return (
     <Container>
-      <MenuTitle>채팅</MenuTitle>
       {chatRoomList.map((chat) => {
         const { docId, users, createdAt, chatList } = chat;
         return (
-          <ContentWrap>
+          <ContentWrap key={`chatRoom-${docId}`}>
             <div className="flex h-20">
               <div className="w-20 p-3.5">
                 <ProfileImages users={users} />
@@ -45,6 +45,7 @@ function chatList({ initChatRoomList }: ChatList) {
           </ContentWrap>
         );
       })}
+      <Empty />
     </Container>
   );
 }
@@ -63,14 +64,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
 export default chatList;
 
 const Container = tw.div`
-flex flex-col w-full mb-2
-`;
-const MenuTitle = tw.p`
-p-4 border-t-2 border-line font-bold text-xl
+flex flex-1 flex-col w-full mb-2
 `;
 const ContentWrap = tw.div`
 w-full border-b-2 border-line flex justify-between items-center hover:cursor-pointer hover:bg-hover
 `;
 const InfoWrap = tw.div`
-  
 `;

@@ -31,7 +31,7 @@ function UserChat({ users }: Users) {
       {users.map(({ image }, idx) => {
         const src = !image ? profile : image;
         return (
-          <DoubleWrap idx={idx}>
+          <DoubleWrap idx={idx} key={`users-img-${idx}`}>
             <Image src={src} width="100%" height="100%" />
           </DoubleWrap>
         );

@@ -3,17 +3,22 @@ import PuffLoader from "react-spinners/PuffLoader";
 
 type SpinnerProps = {
   className?: string;
-  text?: string;
   size?: number | string;
-  children?: ReactNode;
+  fontSize?: string;
+  height?: string;
 };
-function Spinner({ className = "", size = 300 }: SpinnerProps) {
+function Spinner({
+  fontSize = "text-5xl",
+  className = "",
+  size = 300,
+  height = "h-full",
+}: SpinnerProps) {
   return (
     <div
-      className={`flex flex-col justify-center items-center w-full h-full ${className}`}
+      className={`flex flex-col justify-center items-center w-full ${height} ${className}`}
     >
       <PuffLoader color="white" size={size} />
-      <span className="font-bold text-5xl pt-12 pl-6">Loading...</span>
+      <span className={`font-bold ${fontSize} pt-12 pl-6`}>Loading...</span>
     </div>
   );
 }
