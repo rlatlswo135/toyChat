@@ -15,13 +15,11 @@ import { MyChat, OtherChat } from "./_Chat";
 import { getNow } from "../../api/util";
 import { useRouter } from "next/router";
 import { useDocState } from "../../api/hook";
+import { ChatPage } from "../../pages/chat";
 
 // Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
-type ChatProps = {
-  initRoomInfo: ChatRoom;
-  roomId: string;
-};
+type ChatProps = ChatPage;
 // 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
 function Chat({ initRoomInfo, roomId }: ChatProps) {
   const router = useRouter();
@@ -113,13 +111,14 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
             const {
               content,
               sendInfo: { uid, name, image },
+              createdAt,
             } = chat;
 
             if (uid === currentUser?.uid) {
               return (
                 <MyChat
                   key={`myChat-${idx}`}
-                  time={new Date()}
+                  time={createdAt}
                   content={content}
                 />
               );
@@ -127,7 +126,7 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
             return (
               <OtherChat
                 key={`otherChat-${idx}`}
-                time={new Date()}
+                time={createdAt}
                 content={content}
                 img={image}
               />
@@ -135,7 +134,7 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
           })}
         </ChatWrap>
       </div>
-      <form className="p-1" onSubmit={submitHandler}>
+      <form onSubmit={submitHandler}>
         <ChatInput
           placeholder="Put Your Message...."
           type="text"

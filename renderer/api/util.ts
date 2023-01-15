@@ -1,5 +1,4 @@
 import { format, formatDistance } from "date-fns";
-import { Timestamp } from "firebase/firestore";
 
 type TimeDistance =
   | "today"

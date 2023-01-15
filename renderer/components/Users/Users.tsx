@@ -9,11 +9,9 @@ import { Account, ChatRoom, postChatRoom, User } from "../../api/store";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { Empty } from "../Empty";
 import { getNow } from "../../api/util";
+import { UsersPage } from "../../pages/users";
 
-type UsersProps = {
-  initAccountList: Account[];
-  initChatRoomList: ChatRoom[];
-};
+type UsersProps = UsersPage;
 export function Users({ initAccountList, initChatRoomList }: UsersProps) {
   const router = useRouter();
   const { currentUser, isLoading } = useAuthContext() as AuthContext;
