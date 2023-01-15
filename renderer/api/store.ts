@@ -37,20 +37,6 @@ export type ChatRoom = {
 };
 
 // ********************** chatroom
-export const getMyChatRoom = (
-  currentUser: User,
-  list: ChatRoom[]
-): ChatRoom[] => {
-  if (currentUser) {
-    const uid = currentUser.uid;
-    return list.filter((item) => {
-      const users = item.users.map((item) => item.uid);
-      return users.includes(uid);
-    });
-  }
-  return [];
-};
-
 export const getChatroomList = async () => {
   const result = await useCollectionData<ChatRoom>("chatRoom");
   return result;
@@ -82,6 +68,15 @@ export const deleteUserInChatRoom = async (docId: string, data: User) => {
   return result;
 };
 
+export const inviteUserInChatRoom = async (docId: string, data: User) => {
+  const body = {
+    users: arrayUnion(data),
+  };
+  console.log("````````````body````````````", body);
+  const result = await useUpdateDocData("chatRoom", docId, body);
+  return result;
+};
+
 // ********************** chat
 export const postChatData = async (docId: string, data: Chat) => {
   const body = {
@@ -100,7 +95,7 @@ export const getAccountList = async () => {
 };
 
 export const changeLoginState = async (email: string, state: boolean) => {
-  const accountList = (await getAccountList()) as Account[];
+  const accountList = await getAccountList();
   if (typeof accountList === "string") {
     return accountList;
   }

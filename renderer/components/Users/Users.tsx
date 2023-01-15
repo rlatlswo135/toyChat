@@ -11,6 +11,7 @@ import { Empty } from "../Empty";
 import { getNow } from "../util/time";
 import { UsersPage } from "../../pages/users";
 import { fbAuth } from "../../api/auth";
+import Profile from "./Profile";
 
 type UsersProps = UsersPage;
 export function Users({ initAccountList, initChatRoomList }: UsersProps) {
@@ -97,18 +98,14 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
       {accountList
         .sort((a, b) => Number(b.isLogin) - Number(a.isLogin))
         .map(({ uid, isLogin, email, name, image }) => (
-          <ContentWrap
+          <Profile
             key={`user-${uid}`}
             onClick={() => onClickUserHandler(uid, email, name, image)}
-          >
-            <ImageWrap>
-              <Image width={40} height={40} src={image || profile} />
-            </ImageWrap>
-            <InfoWrap>
-              <Name>{name}</Name>
-              <Email>{email}</Email>
-            </InfoWrap>
-          </ContentWrap>
+            src={image || profile}
+            name={name}
+            email={email}
+            size={40}
+          />
         ))}
       <Empty />
     </Container>
@@ -117,19 +114,4 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
 
 const Container = tw.div`
 flex flex-col w-full mb-2 h-full
-`;
-const ContentWrap = tw.div`
-w-full border-b-2 py-8 px-4 border-line flex justify-start items-center h-16 hover:cursor-pointer hover:bg-hover
-`;
-const ImageWrap = tw.div`
-flex justify-center items-center bg-gray-300 rounded-full w-12 h-12 overflow-hidden
-`;
-const InfoWrap = tw.div`
-flex flex-col pl-4
-`;
-const Name = tw.span`
-ml-1 font-bold tracking-wide
-`;
-const Email = tw.span`
-ml-1 text-sm tracking-wide text-gray-300/70 max-w-[150px] overflow-hidden text-ellipsis
 `;

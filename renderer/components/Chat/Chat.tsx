@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import React, { useCallback, useLayoutEffect, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { ImExit } from "react-icons/im";
 import { FcInvite } from "react-icons/fc";
@@ -22,6 +17,7 @@ import { useRouter } from "next/router";
 import { useDocState } from "../../api/hook";
 import { ChatPage } from "../../pages/chat";
 import { Spinner } from "../Spinner";
+import { Invite } from "./Invite";
 
 // Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
@@ -30,13 +26,10 @@ type ChatProps = ChatPage;
 function Chat({ initRoomInfo, roomId }: ChatProps) {
   const router = useRouter();
   const { currentUser } = useAuthContext() as AuthContext;
-  const [roomInfo, setRoomInfo] = useDocState<ChatRoom>(
-    "chatRoom",
-    roomId,
-    initRoomInfo
-  );
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [roomInfo] = useDocState<ChatRoom>("chatRoom", roomId, initRoomInfo);
   const [chatContent, setChatContent] = useState<string>("");
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isInvite, setIsInvite] = useState<boolean>(false);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
     setChatContent(e.target.value);
@@ -61,6 +54,11 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
     }
   };
 
+  const inviteUser = useCallback(() => {
+    setIsInvite(true);
+    setIsMenuOpen(false);
+  }, []);
+
   const exitChat = useCallback(async () => {
     if (roomInfo) {
       const roomUsers = roomInfo?.users;
@@ -84,12 +82,13 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
   }, [roomInfo]);
 
   if (!roomInfo) {
-    return <Spinner />;
+    return <Spinner text={null} />;
   }
+  console.log("````````````roomInfo````````````", roomInfo);
   return (
     <Div>
       <div className="flex-1 overflow-y-auto">
-        <ChatHeader>
+        <Header>
           <div className="flex justify-between">
             <button onClick={() => router.push("/chatlist")}>&larr;</button>
             <span>{`${roomInfo.users
@@ -107,7 +106,7 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
           </div>
           {isMenuOpen && (
             <Menus>
-              <Menu>
+              <Menu onClick={inviteUser}>
                 <FcInvite className="w-5 h-5" />
                 <span className="ml-3">Invite User</span>
               </Menu>
@@ -117,7 +116,7 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
               </Menu>
             </Menus>
           )}
-        </ChatHeader>
+        </Header>
         {/* 채팅박스 */}
         <TimeStamp>
           <span>timeStamp 00:00</span>
@@ -159,6 +158,7 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
         />
         <SendBtn>Send</SendBtn>
       </form>
+      {isInvite && <Invite setIsInvite={setIsInvite} roomInfo={roomInfo} />}
     </Div>
   );
 }
@@ -169,7 +169,7 @@ const Div = tw.div`
   flex relative flex-col w-full h-full
 `;
 
-const ChatHeader = tw.header`
+const Header = tw.header`
 py-4 px-8 border-b-2 border-gray-400/20 text-l font-bold tracking-wide
 `;
 
@@ -182,7 +182,8 @@ px-3
 `;
 
 const ChatInput = tw.input`
-rounded-xl w-[90%] h-10 px-5 outline-none bg-gray-400 placeholder:text-white/30
+rounded-xl w-[90%] h-10 px-5 outline-none bg-gray-400
+placeholder:text-white/30
 `;
 
 const SendBtn = tw.button`
@@ -194,5 +195,6 @@ absolute border-2 flex flex-col left-3/4 max-w-52 w-52 border-gray-400/20 bg-gra
 `;
 
 const Menu = tw.li`
-flex items-center py-2 px-8 border-b-2 text-center border-gray-500/70 hover:bg-gray-500 hover:cursor-pointer
+flex items-center py-2 px-8 border-b-2 text-center border-gray-500/70
+hover:bg-gray-500 hover:cursor-pointer
 `;

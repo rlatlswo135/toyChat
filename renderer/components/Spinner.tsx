@@ -6,7 +6,7 @@ type SpinnerProps = {
   size?: number | string;
   fontSize?: string;
   height?: string;
-  text?: string;
+  text: string | null;
 };
 function Spinner({
   fontSize = "text-5xl",

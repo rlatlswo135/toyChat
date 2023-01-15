@@ -67,7 +67,9 @@ export const useDocData = async (collectionName: Collection, docId: string) => {
     return err;
   }
 };
-export const useCollectionData = async <T>(name: string) => {
+export const useCollectionData = async <T>(
+  name: string
+): Promise<T[] | string> => {
   try {
     const resultArray: T[] = [];
     const ref = collection(fbDb, name);
