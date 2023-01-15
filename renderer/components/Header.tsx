@@ -45,7 +45,7 @@ function Header() {
   );
 }
 
-export default Header;
+export default React.memo(Header);
 
 const MenuTitle = tw.h1`
 font-bold text-xl

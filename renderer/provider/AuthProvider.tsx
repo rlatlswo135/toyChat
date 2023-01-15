@@ -25,24 +25,14 @@ export type CurrentUser = {
 
 export type AuthContext = {
   currentUser: CurrentUser | null;
-  isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 const authContext = createContext<AuthContext | null>(null);
 
 function AuthProvider({ children }: ContextProps) {
-  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    setIsLoading(true);
-    if (currentUser) {
-      router.push("/users");
-      setIsLoading(false);
-      return;
-    }
     onAuthStateChanged(fbAuth, (user) => {
       if (user && user.email && user.uid) {
         setCurrentUser({
@@ -51,19 +41,18 @@ function AuthProvider({ children }: ContextProps) {
           name: user.displayName || "",
           image: user.photoURL,
         });
+      } else {
+        setCurrentUser(null);
       }
-      setIsLoading(false);
     });
-  }, [currentUser]);
+  }, []);
 
   const value = useMemo(
     () => ({
       currentUser,
-      isLoading,
-      setIsLoading,
     }),
 
-    [currentUser, isLoading, setIsLoading]
+    [currentUser]
   );
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>;

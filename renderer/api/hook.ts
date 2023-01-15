@@ -13,7 +13,6 @@ import {
 import { Router } from "next/router";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { fbDb } from "./firebase";
-import { toJson } from "./util";
 
 type Collection = "accounts" | "chatRoom";
 
@@ -80,9 +79,9 @@ export const useCollectionData = async <T>(name: string) => {
     });
 
     return resultArray;
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    return toJson(err);
+    return err.code;
   }
 };
 

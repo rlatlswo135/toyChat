@@ -1,4 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { ImExit } from "react-icons/im";
 import { FcInvite } from "react-icons/fc";
@@ -12,10 +17,11 @@ import {
 import { postChatData } from "../../api/store";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
-import { getNow } from "../../api/util";
+import { getNow, timeFormat } from "../util/time";
 import { useRouter } from "next/router";
 import { useDocState } from "../../api/hook";
 import { ChatPage } from "../../pages/chat";
+import { Spinner } from "../Spinner";
 
 // Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
@@ -55,21 +61,31 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
     }
   };
 
-  const exitChat = useCallback(() => {
+  const exitChat = useCallback(async () => {
     if (roomInfo) {
       const roomUsers = roomInfo?.users;
       if (roomUsers.length === 1 && roomUsers[0].uid === currentUser?.uid) {
-        deleteChatRoom(roomId);
+        console.log("````````````방삭제````````````");
+        await deleteChatRoom(roomId);
       } else {
         if (currentUser) {
-          console.log("나가기");
-          deleteUserInChatRoom(roomId, { ...currentUser });
+          console.log("````````````나가기````````````");
+          router.push("/chatlist");
+          await deleteUserInChatRoom(roomId, { ...currentUser });
         }
       }
+    }
+  }, [roomInfo]);
+
+  useLayoutEffect(() => {
+    if (!roomInfo) {
       router.push("/chatlist");
     }
   }, [roomInfo]);
 
+  if (!roomInfo) {
+    return <Spinner />;
+  }
   return (
     <Div>
       <div className="flex-1 overflow-y-auto">
@@ -118,7 +134,7 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
               return (
                 <MyChat
                   key={`myChat-${idx}`}
-                  time={createdAt}
+                  time={timeFormat(createdAt)}
                   content={content}
                 />
               );
@@ -126,7 +142,7 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
             return (
               <OtherChat
                 key={`otherChat-${idx}`}
-                time={createdAt}
+                time={timeFormat(createdAt)}
                 content={content}
                 img={image}
               />

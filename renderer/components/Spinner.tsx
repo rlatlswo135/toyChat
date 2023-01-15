@@ -6,11 +6,13 @@ type SpinnerProps = {
   size?: number | string;
   fontSize?: string;
   height?: string;
+  text?: string;
 };
 function Spinner({
   fontSize = "text-5xl",
   className = "",
   size = 300,
+  text = "Loading...",
   height = "h-full",
 }: SpinnerProps) {
   return (
@@ -18,7 +20,7 @@ function Spinner({
       className={`flex flex-col justify-center items-center w-full ${height} ${className}`}
     >
       <PuffLoader color="white" size={size} />
-      <span className={`font-bold ${fontSize} pt-12 pl-6`}>Loading...</span>
+      <span className={`font-bold ${fontSize} pt-12 pl-6`}>{text}</span>
     </div>
   );
 }

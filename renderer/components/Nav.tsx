@@ -4,7 +4,7 @@ import tw from "tailwind-styled-components";
 import { FaUser } from "react-icons/fa";
 import { BsFillChatFill } from "react-icons/bs";
 
-export function Nav() {
+function Nav() {
   return (
     <Container>
       <ul className="flex flex-col items-center justify-start flex-1">
@@ -22,6 +22,8 @@ export function Nav() {
     </Container>
   );
 }
+
+export default React.memo(Nav);
 
 const Container = tw.nav`
 bg-zinc-800 flex flex-col justify-center h-full w-20

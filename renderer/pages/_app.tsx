@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import tw from "tailwind-styled-components";
 import type { AppProps } from "next/app";
 import "../styles/globals.css";
@@ -6,28 +6,27 @@ import { AuthProvider } from "../provider/AuthProvider";
 import { usePageLoading } from "../api/hook";
 import { Spinner } from "../components/Spinner";
 import Header from "../components/Header";
-import { ContentWrap } from "../components/ContentWrap";
+import ContentWrap from "../components/ContentWrap";
 
 function MyApp({ router, Component, pageProps }: AppProps) {
   const { pageLoading } = usePageLoading();
   const pathName = router.pathname;
 
-  const routes = () => {
+  const routes = useCallback(() => {
     switch (pathName) {
       case "/home":
+      case "/register":
         return (
           <AuthProvider>
             {pageLoading ? <Spinner /> : <Component {...pageProps} />}
           </AuthProvider>
         );
-      case "/register":
-        return <Component {...pageProps} />;
       default:
         return (
           <AuthProvider>
             <ContentWrap>
               {pageLoading ? (
-                <Spinner />
+                <Spinner text="GetChat..." />
               ) : (
                 <>
                   {pathName !== "/chat" && <Header />}
@@ -38,7 +37,8 @@ function MyApp({ router, Component, pageProps }: AppProps) {
           </AuthProvider>
         );
     }
-  };
+  }, [pathName, pageLoading]);
+
   return <Container>{routes()}</Container>;
 }
 

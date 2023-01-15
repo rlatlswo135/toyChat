@@ -6,17 +6,22 @@ import {
   signInWithEmailAndPassword,
   browserLocalPersistence,
   updateProfile,
+  UserCredential,
 } from "firebase/auth";
 import { usePostCollectionData } from "./hook";
 import { changeLoginState } from "./store";
 
 const fbAuth = getAuth(fbApp);
 
-const loginAccount = async (auth: Auth, email: string, password: string) => {
+const loginAccount = async (
+  auth: Auth,
+  email: string,
+  password: string
+): Promise<UserCredential | string> => {
   try {
     await fbAuth.setPersistence(browserLocalPersistence);
     const data = await signInWithEmailAndPassword(auth, email, password);
-    changeLoginState(email, true);
+    await changeLoginState(email, true);
     return data;
   } catch (err: any) {
     console.error(err);
@@ -37,7 +42,7 @@ const createAccount = async (
       password
     );
 
-    const test = await updateProfile(user, { displayName: name, photoURL: "" });
+    await updateProfile(user, { displayName: name, photoURL: "" });
     const result = await usePostCollectionData("accounts", {
       uid: user.uid,
       email: user.email,

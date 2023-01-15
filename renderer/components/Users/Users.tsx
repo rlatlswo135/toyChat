@@ -8,13 +8,15 @@ import { useCollectionState } from "../../api/hook";
 import { Account, ChatRoom, postChatRoom, User } from "../../api/store";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { Empty } from "../Empty";
-import { getNow } from "../../api/util";
+import { getNow } from "../util/time";
 import { UsersPage } from "../../pages/users";
+import { fbAuth } from "../../api/auth";
 
 type UsersProps = UsersPage;
 export function Users({ initAccountList, initChatRoomList }: UsersProps) {
+  console.log("````````````auth````````````", fbAuth.currentUser);
   const router = useRouter();
-  const { currentUser, isLoading } = useAuthContext() as AuthContext;
+  const { currentUser } = useAuthContext() as AuthContext;
   const [chatRoomList] = useCollectionState<ChatRoom>(
     "chatRoom",
     initChatRoomList

@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import profile from "../public/images/default.png";
 import { useRouter } from "next/router";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createAccount, fbAuth } from "../api/auth";
 import { MSG_PWD_CONFIRM } from "../constants/error";
 import { LIMIT } from "../constants/image";
@@ -20,7 +20,7 @@ type RegisterInfo = {
   image: string;
 };
 
-export function Register() {
+function Register() {
   const router = useRouter();
   const imageRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -89,6 +89,7 @@ export function Register() {
       setRegisterInfo((prev) => ({ ...prev, image: name }));
     }
   };
+
   // Todo 가입 중복시 에러메시지
   return (
     <HomeDiv>
@@ -143,3 +144,5 @@ export function Register() {
     </HomeDiv>
   );
 }
+
+export default React.memo(Register);

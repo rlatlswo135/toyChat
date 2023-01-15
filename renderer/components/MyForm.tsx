@@ -22,6 +22,7 @@ export function MyForm({
   submitHandler,
   submitText = "submit",
 }: MyFormProps) {
+  // ! 렌더링 생각하면 form을 하나씩 해야할텐데..
   return (
     <form onSubmit={submitHandler}>
       {formData.map((form) => {

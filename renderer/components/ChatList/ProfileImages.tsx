@@ -58,7 +58,7 @@ function ProfileImages({ users }: Users) {
 export { ProfileImages };
 
 const SingleWrap = tw.div`
-relative flex justify-center items-center w-full h-full rounded-xl overflow-hidden bg-gray-400/20
+relative flex justify-center items-center w-full h-full rounded-full overflow-hidden bg-gray-400/20
 `;
 
 const DoubleWrap = tw.div<{ idx: number }>`

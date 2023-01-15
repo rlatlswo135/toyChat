@@ -100,7 +100,7 @@ export const getAccountList = async () => {
 };
 
 export const changeLoginState = async (email: string, state: boolean) => {
-  const accountList = await getAccountList();
+  const accountList = (await getAccountList()) as Account[];
   if (typeof accountList === "string") {
     return accountList;
   }
