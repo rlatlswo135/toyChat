@@ -60,6 +60,12 @@ export function Invite({ setIsInvite, roomInfo, roomId }: InviteProps) {
         return;
       }
 
+      // Todo : 각종 유저리스트 등에 "나 자신" 은 제외되게 렌더링. + Users컴포넌트 온라인 / 오프라인 상태에 따라 유저 나누기
+      // Todo : 초대시 초대했습니다 메시지 어떻게 데이터 넣을건지
+      // Todo : 채팅 맨위에 타임스탬프 어떻게할건지.  -> 카톡은 일자별로 쪼개져서 나옴
+
+      // * 당장 생각난건 chatList에 sendInfo에 system 이라는 플래그로 넣어서 별도로 렌더링해줄지 고민
+
       const result = await inviteUserInChatRoom(roomId, {
         uid,
         email,
