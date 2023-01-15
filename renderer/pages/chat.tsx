@@ -10,12 +10,14 @@ import {
   getChatroomList,
 } from "../api/store";
 import { ChatMain } from "../components/ChatMain";
+import { Spinner } from "../components/Spinner";
 
 type Chat = {
   roomId: string;
   initRoomInfo: ChatRoom;
   initChatRoomList: ChatRoom[];
   initAccountList: Account[];
+  pageLoading: boolean;
 };
 
 function chat({
@@ -23,13 +25,24 @@ function chat({
   initAccountList,
   initRoomInfo,
   roomId,
+  pageLoading,
 }: Chat) {
   const router = useRouter();
+
+  return <div>chat</div>;
 
   if (typeof router.query.id === "string") {
     return (
       <ChatMain initUserList={initAccountList} initChatRoom={initChatRoomList}>
-        <Chat init={initRoomInfo} roomId={roomId} />
+        {pageLoading ? (
+          <Spinner className="flex flex-col justify-center items-center w-full h-full">
+            <span className="text-xl font-bold pt-5 text-center">
+              ChatList...
+            </span>
+          </Spinner>
+        ) : (
+          <Chat init={initRoomInfo} roomId={roomId} />
+        )}
       </ChatMain>
     );
   }

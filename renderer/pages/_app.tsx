@@ -1,16 +1,23 @@
 import React from "react";
+import tw from "tailwind-styled-components";
 import type { AppProps } from "next/app";
 import "../styles/globals.css";
-import { Container } from "../components/Container";
 import { AuthProvider } from "../provider/AuthProvider";
+import { usePageLoading } from "../api/hook";
+import { Spinner } from "../components/Spinner";
+import Header from "../components/Header";
+import { ContentWrap } from "../components/ContentWrap";
 
 function MyApp({ router, Component, pageProps }: AppProps) {
+  const { pageLoading } = usePageLoading();
   const pathName = router.pathname;
   return (
     <Container>
-      {["/chatlist", "/chat", "/home"].includes(pathName) ? (
+      {["/chatlist", "/chat", "/home", "/users"].includes(pathName) ? (
         <AuthProvider>
-          <Component {...pageProps} />
+          <ContentWrap>
+            {pageLoading ? <Spinner /> : <Component {...pageProps} />}
+          </ContentWrap>
         </AuthProvider>
       ) : (
         <Component {...pageProps} />
@@ -20,3 +27,7 @@ function MyApp({ router, Component, pageProps }: AppProps) {
 }
 
 export default MyApp;
+
+const Container = tw.div`
+flex flex-col max-h-screen h-screen w-screen overflow-auto relative px-28 py-12
+`;

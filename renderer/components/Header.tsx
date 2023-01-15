@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import tw from "tailwind-styled-components";
 import { logOutAccount, fbAuth } from "../api/auth";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
+import Link from "next/link";
 
 function Header() {
   const router = useRouter();
@@ -20,16 +21,25 @@ function Header() {
   }, [currentUser]);
 
   return (
-    <HeaderWrap>
-      <button className="text-xl font-bold" onClick={logOutHandler}>
-        Sign out
-      </button>
-    </HeaderWrap>
+    <Container>
+      <Menus>
+        <button className="text-xl font-bold" onClick={logOutHandler}>
+          Sign out
+        </button>
+      </Menus>
+      <Title>Welcom to Toy Chat</Title>
+    </Container>
   );
 }
 
 export default Header;
 
-const HeaderWrap = tw.header`
-flex px-10 py-6 w-screen justify-end
+const Container = tw.header`
+flex flex-col w-full justify-end
+`;
+const Menus = tw.div`
+flex items-start justify-end h-20
+`;
+const Title = tw.h1`
+pt-24 py-12 text-center text-8xl font-bold
 `;

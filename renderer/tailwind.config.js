@@ -15,6 +15,8 @@ module.exports = {
       blue: colors.blue,
       logout: colors.gray[500],
       time: "rgb(209 213 219 / 0.3)",
+      line: "rgb(156 163 175 / 0.2)",
+      hover: colors.gray[500],
     },
     extend: {},
   },

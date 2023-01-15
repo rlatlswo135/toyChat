@@ -4,31 +4,28 @@ import tw from "tailwind-styled-components";
 import Image from "next/image";
 import { useCollectionState } from "../api/hook";
 import { Account, ChatRoom, postChatRoom, User } from "../api/store";
-import { AuthContext, useAuthContext } from "../provider/AuthProvider";
+import { CurrentUser } from "../provider/AuthProvider";
 import profile from "../public/images/default.png";
 import { getNow } from "../api/util";
 import { useRouter } from "next/router";
 import { Spinner } from "./Spinner";
 
 type UserListProps = {
-  initAccount: Account[];
+  accountList: Account[];
   initChatRoom: ChatRoom[];
+  currentUser: CurrentUser;
 };
 
-function UserList({ initAccount, initChatRoom }: UserListProps) {
+function UserList({ accountList, initChatRoom, currentUser }: UserListProps) {
   const router = useRouter();
   const [loading, setIsLoading] = useState<boolean>(false);
-  const { currentUser } = useAuthContext() as AuthContext;
-
-  const [accountList] = useCollectionState<Account>("accounts", initAccount);
   const [chatRoomList] = useCollectionState<ChatRoom>("chatRoom", initChatRoom);
 
   const createChatRoom = async (
     uid: string,
     email: string,
     name: string,
-    image: string | null,
-    isLogin: boolean
+    image: string | null
   ) => {
     const users = [] as User[];
     if (uid && email && name && currentUser) {
@@ -46,9 +43,17 @@ function UserList({ initAccount, initChatRoom }: UserListProps) {
       if (findExistRoomIndex >= 0) {
         // router.push가 중복이 많은것같으니 커스텀훅을 만드는것도 좋을지도
         const id = chatRoomList[findExistRoomIndex].docId;
+        if (
+          router.query &&
+          router.query.id === chatRoomList[findExistRoomIndex].docId
+        ) {
+          console.log("현재채팅");
+          return;
+        }
+
         if (id) {
           router.push({
-            pathname: `${router.pathname}/chat`,
+            pathname: "/chat",
             query: { id: chatRoomList[findExistRoomIndex].docId },
           });
         }
@@ -84,7 +89,7 @@ function UserList({ initAccount, initChatRoom }: UserListProps) {
         .sort((a, b) => Number(b.isLogin) - Number(a.isLogin))
         .map(({ uid, isLogin, email, name, image }) => (
           <UserDiv
-            onClick={() => createChatRoom(uid, email, name, image, isLogin)}
+            onClick={() => createChatRoom(uid, email, name, image)}
             key={`uid-${uid}`}
             $login={isLogin}
           >

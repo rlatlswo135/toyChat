@@ -16,7 +16,7 @@ type ContextProps = {
   children: ReactNode;
 };
 
-type CurrentUser = {
+export type CurrentUser = {
   email: string;
   uid: string;
   name: string;
@@ -39,7 +39,7 @@ function AuthProvider({ children }: ContextProps) {
   useEffect(() => {
     setIsLoading(true);
     if (currentUser) {
-      router.push("/chatlist");
+      router.push("/users");
       setIsLoading(false);
       return;
     }

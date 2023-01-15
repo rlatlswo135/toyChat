@@ -13,7 +13,12 @@ function GroupChat({ users }: Users) {
       {users.map(({ image }, idx) => {
         const src = !image ? profile : image;
         return (
-          <Image key={`groupImage-${idx}`} src={src} className="rounded-xl" />
+          <Image
+            key={`groupImage-${idx}`}
+            src={src}
+            width="100%"
+            height="100%"
+          />
         );
       })}
     </GroupImages>
@@ -22,44 +27,44 @@ function GroupChat({ users }: Users) {
 
 function UserChat({ users }: Users) {
   return (
-    <UserImages>
+    <div className="relative w-full h-full">
       {users.map(({ image }, idx) => {
         const src = !image ? profile : image;
         return (
-          <div
-            key={`userImage-${idx}`}
-            className={idx === 1 ? "absolute top-1/3 right-0 z-50" : "absolute"}
-          >
-            <Image src={src} width={45} height={45} className="rounded-xl" />
-          </div>
+          <DoubleWrap idx={idx}>
+            <Image src={src} width="100%" height="100%" />
+          </DoubleWrap>
         );
       })}
-    </UserImages>
+    </div>
   );
 }
 
 function SingleChat({ users }: Users) {
   const src = users[0].image ? users[0].image : profile;
   return (
-    <div className="flex justify-center items-center w-20 h-20 rounded-xl mr-4">
-      <Image src={src} width={60} height={60} className="rounded-xl" />
-    </div>
+    <SingleWrap>
+      <Image src={src} width="100%" height="100%" />
+    </SingleWrap>
   );
 }
 
 function ProfileImages({ users }: Users) {
   if (users.length === 1) return <SingleChat users={users} />;
-  // if (users.length === 1) return <div>asd</div>;
   if (users.length === 2) return <UserChat users={users} />;
   return <GroupChat users={users} />;
 }
 
 export { ProfileImages };
 
-const GroupImages = tw.div`
-grid grid-cols-2 grid-rows-auto gap-2 w-20 h-20 mr-4 rounded-xl
+const SingleWrap = tw.div`
+relative flex justify-center items-center w-full h-full rounded-xl overflow-hidden bg-gray-400/20
 `;
 
-const UserImages = tw.div`
-relative w-20 h-20 mr-4 rounded-xl
+const DoubleWrap = tw.div<{ idx: number }>`
+absolute bg-gray-500 rounded-xl overflow-hidden w-2/3 h-2/3
+${({ idx }) => (idx === 1 ? "top-2/4 right-0 z-50" : "top-0 left-0")}
+`;
+const GroupImages = tw.div`
+grid grid-cols-2 grid-rows-auto gap-2 w-full h-full mr-4 rounded-xl
 `;

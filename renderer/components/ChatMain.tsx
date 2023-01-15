@@ -5,6 +5,7 @@ import { Account, ChatRoom } from "../api/store";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import Header from "./Header";
 import { UserList } from "./UserList";
+import { useCollectionState } from "../api/hook";
 
 type ChatMainProps = {
   initUserList: Account[];
@@ -13,6 +14,8 @@ type ChatMainProps = {
 };
 function ChatMain({ initUserList, initChatRoom, children }: ChatMainProps) {
   const router = useRouter();
+
+  const [accountList] = useCollectionState<Account>("accounts", initUserList);
   const { currentUser, isLoading } = useAuthContext() as AuthContext;
 
   useEffect(() => {
@@ -24,11 +27,7 @@ function ChatMain({ initUserList, initChatRoom, children }: ChatMainProps) {
   return (
     <div className="flex flex-col h-full">
       <Header />
-      <p className="border-b-2 pt-24 py-12 text-center text-8xl font-bold">
-        Welcom to Toy Chat
-      </p>
       <div className="flex flex-1 w-full max-h-full mx-auto pt-12 overflow-x-hidden">
-        <UserList initAccount={initUserList} initChatRoom={initChatRoom} />
         <Div>
           <ChatWrap>{children}</ChatWrap>
         </Div>

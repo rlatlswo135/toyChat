@@ -10,12 +10,14 @@ import {
   getDoc,
   deleteDoc,
 } from "firebase/firestore";
+import { Router } from "next/router";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { fbDb } from "./firebase";
 import { toJson } from "./util";
 
 type Collection = "accounts" | "chatRoom";
-// state로 쓰기위해
+
+// ************** State
 export const useCollectionState = <T>(
   colName: Collection,
   init: T[]
@@ -60,7 +62,6 @@ export const useDocData = async (collectionName: Collection, docId: string) => {
   try {
     const ref = doc(fbDb, collectionName, docId);
     const result = await getDoc(ref);
-    console.log("````````````useDocData````````````", result.data());
     return result.data();
   } catch (err) {
     console.error(err);
@@ -143,3 +144,26 @@ export const useDeleteDocData = async (colName: Collection, docId: string) => {
 };
 
 // ************************************************************************** //
+
+export const usePageLoading = () => {
+  const [pageLoading, setPageLoading] = useState<boolean>(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const routeStartEvent = () => setPageLoading(true);
+    const routeEndEvent = () => setPageLoading(false);
+    const routeErrEvent = (e: any) => setPageLoading(false);
+
+    Router.events.on("routeChangeStart", routeStartEvent);
+    Router.events.on("routeChangeComplete", routeEndEvent);
+    Router.events.on("routeChangeError", routeErrEvent);
+
+    return () => {
+      Router.events.off("routeChangeStart", routeStartEvent);
+      Router.events.off("routeChangeComplete", routeErrEvent);
+      Router.events.off("routeChangeError", routeEndEvent);
+    };
+  }, []);
+
+  return { pageLoading };
+};
