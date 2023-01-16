@@ -1,6 +1,5 @@
 import { fbApp, fbDb } from "./firebase";
 import {
-  Auth,
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -14,13 +13,12 @@ import { changeLoginState } from "./store";
 const fbAuth = getAuth(fbApp);
 
 const loginAccount = async (
-  auth: Auth,
   email: string,
   password: string
 ): Promise<UserCredential | string> => {
   try {
     await fbAuth.setPersistence(browserLocalPersistence);
-    const data = await signInWithEmailAndPassword(auth, email, password);
+    const data = await signInWithEmailAndPassword(fbAuth, email, password);
     await changeLoginState(email, true);
     return data;
   } catch (err: any) {
@@ -29,15 +27,10 @@ const loginAccount = async (
   }
 };
 
-const createAccount = async (
-  auth: Auth,
-  email: string,
-  name: string,
-  password: string
-) => {
+const createAccount = async (email: string, name: string, password: string) => {
   try {
     const { user } = await createUserWithEmailAndPassword(
-      auth,
+      fbAuth,
       email,
       password
     );
@@ -46,9 +39,11 @@ const createAccount = async (
     const result = await usePostCollectionData("accounts", {
       uid: user.uid,
       email: user.email,
-      name: name,
+      name: name || "기본이름",
       image: "",
+      isLogin: true,
     });
+    await loginAccount(email, password);
     return result;
   } catch (err: any) {
     console.error(err);
@@ -56,9 +51,9 @@ const createAccount = async (
   }
 };
 
-const logOutAccount = async (auth: Auth, email: string) => {
+const logOutAccount = async (email: string) => {
   try {
-    const data = await auth.signOut();
+    const data = await fbAuth.signOut();
     changeLoginState(email, false);
     return data;
   } catch (err: any) {

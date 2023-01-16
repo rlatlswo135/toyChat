@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import tw from "tailwind-styled-components";
-import { logOutAccount, fbAuth } from "../api/auth";
+import { logOutAccount } from "../api/auth";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 
 function Header() {
@@ -28,7 +28,7 @@ function Header() {
       return;
     }
 
-    const result = await logOutAccount(fbAuth, currentUser.email);
+    const result = await logOutAccount(currentUser.email);
     if (typeof result === "string") {
       return;
     }

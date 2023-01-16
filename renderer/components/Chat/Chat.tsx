@@ -84,7 +84,6 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
   if (!roomInfo) {
     return <Spinner text={null} />;
   }
-  console.log("````````````roomInfo````````````", roomInfo);
   return (
     <Div>
       <div className="flex-1 overflow-y-auto">
@@ -158,7 +157,9 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
         />
         <SendBtn>Send</SendBtn>
       </form>
-      {isInvite && <Invite setIsInvite={setIsInvite} roomInfo={roomInfo} />}
+      {isInvite && (
+        <Invite setIsInvite={setIsInvite} roomInfo={roomInfo} roomId={roomId} />
+      )}
     </Div>
   );
 }

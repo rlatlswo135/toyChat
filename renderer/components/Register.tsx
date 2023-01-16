@@ -3,8 +3,8 @@ import Head from "next/head";
 import Image from "next/image";
 import profile from "../public/images/default.png";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { createAccount, fbAuth } from "../api/auth";
+import React, { useMemo, useRef, useState } from "react";
+import { createAccount } from "../api/auth";
 import { MSG_PWD_CONFIRM } from "../constants/error";
 import { LIMIT } from "../constants/image";
 import { HomeContentDiv, Error, HomeDiv, HomeTitleDiv } from "./Home";
@@ -65,14 +65,14 @@ function Register() {
       setLoading(false);
       return;
     }
-    const result = await createAccount(fbAuth, email, name, password);
+    const result = await createAccount(email, name, password);
     if (typeof result === "string") {
       makeErrorMsg(result, setErrMsg);
       setLoading(false);
       return;
     }
     setLoading(false);
-    router.push("/chatlist");
+    router.push("/home");
   };
 
   // Todo: Image를 수정후 uid를 넣어서 해줘야하니까 로그인 이후 마이페이지에서 수정하게끔 바꿔보자
@@ -126,7 +126,7 @@ function Register() {
             <button className="w-full h-full">Go Home</button>
           </Link>
         </ButtonWrap>
-        {loading && <Spinner className="pt-5" />}
+        {loading && <Spinner className="pt-5" size={100} text="SignUp..." />}
         {errMsg && <Error>{errMsg}</Error>}
       </HomeContentDiv>
       <input

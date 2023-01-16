@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import profile from "../../public/images/default.png";
 import tw from "tailwind-styled-components";
-import Image from "next/image";
 import { isEqual } from "lodash";
 import React, { useCallback } from "react";
 import { useCollectionState } from "../../api/hook";
@@ -10,12 +9,10 @@ import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { Empty } from "../Empty";
 import { getNow } from "../util/time";
 import { UsersPage } from "../../pages/users";
-import { fbAuth } from "../../api/auth";
 import Profile from "./Profile";
 
 type UsersProps = UsersPage;
 export function Users({ initAccountList, initChatRoomList }: UsersProps) {
-  console.log("````````````auth````````````", fbAuth.currentUser);
   const router = useRouter();
   const { currentUser } = useAuthContext() as AuthContext;
   const [chatRoomList] = useCollectionState<ChatRoom>(
@@ -57,7 +54,6 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
   const createChatRoom = useCallback(
     async (uid: string, email: string, name: string, image: string | null) => {
       if (!currentUser) {
-        console.log("````````````user없음````````````");
         return;
       }
 
@@ -67,7 +63,6 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
         users.push({ image, email, name, uid });
       }
 
-      console.log("````````````users````````````", users);
       const newChatRoom = await postChatRoom({
         users,
         chatList: [],
@@ -92,19 +87,28 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
 
   return (
     <Container>
-      {/* <MenuTitle>유저</MenuTitle> */}
-      <p>나</p>
-      <div>나담을박스</div>
+      <Profile
+        key={`user-Im`}
+        onClick={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+        src={""}
+        name={""}
+        email={""}
+        imgSize={""}
+      />
       {accountList
+        .filter((user) => user.uid !== currentUser?.uid)
         .sort((a, b) => Number(b.isLogin) - Number(a.isLogin))
         .map(({ uid, isLogin, email, name, image }) => (
           <Profile
-            key={`user-${uid}`}
             onClick={() => onClickUserHandler(uid, email, name, image)}
+            key={`user-${uid}`}
             src={image || profile}
             name={name}
             email={email}
-            size={40}
+            // imgWrapSize={40}
+            imgSize={40}
           />
         ))}
       <Empty />

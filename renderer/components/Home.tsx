@@ -3,7 +3,7 @@ import Head from "next/head";
 import tw from "tailwind-styled-components";
 import Link from "next/link";
 import { PuffLoader } from "react-spinners";
-import { loginAccount, fbAuth } from "../api/auth";
+import { loginAccount } from "../api/auth";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import { ButtonWrap, MyForm } from "./MyForm";
 import { makeErrorMsg } from "./util/error";
@@ -43,7 +43,7 @@ function Home() {
     setErrMsg(null);
     e.preventDefault();
     const { email, password } = loginInfo;
-    const result = await loginAccount(fbAuth, email, password);
+    const result = await loginAccount(email, password);
 
     if (typeof result === "string") {
       makeErrorMsg(result, setErrMsg);

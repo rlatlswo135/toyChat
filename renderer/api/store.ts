@@ -63,7 +63,6 @@ export const deleteUserInChatRoom = async (docId: string, data: User) => {
   const body = {
     users: arrayRemove(data),
   };
-  console.log("````````````body````````````", body);
   const result = await useUpdateDocData("chatRoom", docId, body);
   return result;
 };
@@ -72,7 +71,6 @@ export const inviteUserInChatRoom = async (docId: string, data: User) => {
   const body = {
     users: arrayUnion(data),
   };
-  console.log("````````````body````````````", body);
   const result = await useUpdateDocData("chatRoom", docId, body);
   return result;
 };
@@ -82,9 +80,7 @@ export const postChatData = async (docId: string, data: Chat) => {
   const body = {
     chatList: arrayUnion(data),
   };
-  console.log("````````````body````````````", body);
   const result = await useUpdateDocData("chatRoom", docId, body);
-  // console.log("````````````send chat -> api````````````", result);
   return result;
 };
 

@@ -1,16 +1,14 @@
 import React, {
   createContext,
-  Dispatch,
   ReactNode,
-  SetStateAction,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { useRouter } from "next/router";
 import { onAuthStateChanged } from "firebase/auth";
 import { fbAuth } from "../api/auth";
+import { User } from "@firebase/auth-types";
 
 type ContextProps = {
   children: ReactNode;
@@ -34,7 +32,9 @@ function AuthProvider({ children }: ContextProps) {
 
   useEffect(() => {
     onAuthStateChanged(fbAuth, (user) => {
-      if (user && user.email && user.uid) {
+      console.log("user", user);
+      console.log("displayname", user?.displayName);
+      if (user && user.email && user.uid && user.displayName) {
         setCurrentUser({
           email: user.email,
           uid: user.uid,
