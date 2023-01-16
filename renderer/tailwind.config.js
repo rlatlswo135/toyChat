@@ -18,7 +18,11 @@ module.exports = {
       line: "rgb(156 163 175 / 0.2)",
       hover: colors.gray[500],
     },
-    extend: {},
+    extend: {
+      animation: {
+        test: "loading 5s infinite",
+      },
+    },
   },
   plugins: [],
 };

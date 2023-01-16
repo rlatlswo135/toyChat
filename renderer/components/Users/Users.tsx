@@ -93,9 +93,14 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
     <Container>
       <Profile
         key={`user-Im`}
-        onClick={function (): void {
-          throw new Error("Function not implemented.");
-        }}
+        onClick={() =>
+          onClickUserHandler(
+            currentUser.uid,
+            currentUser.email,
+            currentUser.name,
+            currentUser.image
+          )
+        }
         src={currentUser.image || profile}
         name={currentUser.name}
         email={currentUser.email}

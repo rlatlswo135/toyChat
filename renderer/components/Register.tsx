@@ -72,6 +72,7 @@ function Register() {
       return;
     }
     setLoading(false);
+    router.push("/home");
   };
 
   // Todo: Image를 수정후 uid를 넣어서 해줘야하니까 로그인 이후 마이페이지에서 수정하게끔 바꿔보자
@@ -90,6 +91,10 @@ function Register() {
   };
 
   // Todo 가입 중복시 에러메시지
+  // {loading && <Spinner className="pt-5" size={100} text="SignUp..." />}
+  if (loading) {
+    return <Spinner className="pt-5" size={200} text="Sign Up..." />;
+  }
   return (
     <HomeDiv>
       <Head>toyChat</Head>

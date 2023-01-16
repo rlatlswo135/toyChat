@@ -55,7 +55,7 @@ export const createAccount = async (
       image: "",
       isLogin: true,
     });
-    await loginAccount(email, password);
+
     return result;
   } catch (err: any) {
     console.error(err);
