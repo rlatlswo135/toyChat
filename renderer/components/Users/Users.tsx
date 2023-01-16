@@ -85,6 +85,10 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
     });
   }, []);
 
+  if (!currentUser) {
+    return <div>Loaidng</div>;
+  }
+
   return (
     <Container>
       <Profile
@@ -92,22 +96,36 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
         onClick={function (): void {
           throw new Error("Function not implemented.");
         }}
-        src={""}
-        name={""}
-        email={""}
-        imgSize={""}
+        src={currentUser.image || profile}
+        name={currentUser.name}
+        email={currentUser.email}
+        imgSize={40}
+        imgWrapSize={16}
+        height={18}
       />
+      <span className="p-5 text-gray-400 font-bold">온라인</span>
       {accountList
-        .filter((user) => user.uid !== currentUser?.uid)
-        .sort((a, b) => Number(b.isLogin) - Number(a.isLogin))
-        .map(({ uid, isLogin, email, name, image }) => (
+        .filter((user) => user.uid !== currentUser?.uid && user.isLogin)
+        .map(({ uid, email, name, image }) => (
           <Profile
             onClick={() => onClickUserHandler(uid, email, name, image)}
             key={`user-${uid}`}
             src={image || profile}
             name={name}
             email={email}
-            // imgWrapSize={40}
+            imgSize={40}
+          />
+        ))}
+      <span className="p-5 text-gray-400 font-bold">오프라인</span>
+      {accountList
+        .filter((user) => user.uid !== currentUser?.uid && !user.isLogin)
+        .map(({ uid, email, name, image }) => (
+          <Profile
+            onClick={() => onClickUserHandler(uid, email, name, image)}
+            key={`user-${uid}`}
+            src={image || profile}
+            name={name}
+            email={email}
             imgSize={40}
           />
         ))}

@@ -14,11 +14,24 @@ function MyApp({ router, Component, pageProps }: AppProps) {
 
   const routes = useCallback(() => {
     switch (pathName) {
-      case "/home":
       case "/register":
         return (
+          <>
+            {pageLoading ? (
+              <Spinner text={null} />
+            ) : (
+              <Component {...pageProps} />
+            )}
+          </>
+        );
+      case "/home":
+        return (
           <AuthProvider>
-            {pageLoading ? <Spinner /> : <Component {...pageProps} />}
+            {pageLoading ? (
+              <Spinner text={null} />
+            ) : (
+              <Component {...pageProps} />
+            )}
           </AuthProvider>
         );
       default:

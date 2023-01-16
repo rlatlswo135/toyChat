@@ -6,36 +6,48 @@ import {
   browserLocalPersistence,
   updateProfile,
   UserCredential,
+  deleteUser,
 } from "firebase/auth";
 import { usePostCollectionData } from "./hook";
 import { changeLoginState } from "./store";
 
-const fbAuth = getAuth(fbApp);
+export const getMyAuth = () => getAuth(fbApp);
 
-const loginAccount = async (
+export const loginAccount = async (
   email: string,
   password: string
 ): Promise<UserCredential | string> => {
   try {
+    const fbAuth = getMyAuth();
     await fbAuth.setPersistence(browserLocalPersistence);
-    const data = await signInWithEmailAndPassword(fbAuth, email, password);
+    const result = await signInWithEmailAndPassword(fbAuth, email, password);
+    console.log("````````````login - result````````````", result);
     await changeLoginState(email, true);
-    return data;
+    return result;
   } catch (err: any) {
     console.error(err);
     return err.code;
   }
 };
 
-const createAccount = async (email: string, name: string, password: string) => {
+export const createAccount = async (
+  email: string,
+  name: string,
+  password: string
+) => {
   try {
+    const fbAuth = getMyAuth();
     const { user } = await createUserWithEmailAndPassword(
       fbAuth,
       email,
       password
     );
 
-    await updateProfile(user, { displayName: name, photoURL: "" });
+    const update = await updateProfile(user, {
+      displayName: name,
+      photoURL: "",
+    });
+
     const result = await usePostCollectionData("accounts", {
       uid: user.uid,
       email: user.email,
@@ -51,8 +63,9 @@ const createAccount = async (email: string, name: string, password: string) => {
   }
 };
 
-const logOutAccount = async (email: string) => {
+export const logOutAccount = async (email: string) => {
   try {
+    const fbAuth = getMyAuth();
     const data = await fbAuth.signOut();
     changeLoginState(email, false);
     return data;
@@ -62,4 +75,16 @@ const logOutAccount = async (email: string) => {
   }
 };
 
-export { fbAuth, createAccount, loginAccount, logOutAccount };
+export const deleteAccount = async () => {
+  try {
+    const fbAuth = getMyAuth();
+    const user = fbAuth.currentUser;
+    if (fbAuth && user) {
+      const result = await deleteUser(user);
+      return result;
+    }
+  } catch (err: any) {
+    console.error(err);
+    return err.code;
+  }
+};

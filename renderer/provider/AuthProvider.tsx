@@ -7,8 +7,7 @@ import React, {
   useState,
 } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { fbAuth } from "../api/auth";
-import { User } from "@firebase/auth-types";
+import { getMyAuth } from "../api/auth";
 
 type ContextProps = {
   children: ReactNode;
@@ -28,17 +27,17 @@ export type AuthContext = {
 const authContext = createContext<AuthContext | null>(null);
 
 function AuthProvider({ children }: ContextProps) {
+  const fbAuth = getMyAuth();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
     onAuthStateChanged(fbAuth, (user) => {
-      console.log("user", user);
-      console.log("displayname", user?.displayName);
       if (user && user.email && user.uid && user.displayName) {
+        console.log("````````````Provider - current User Set````````````");
         setCurrentUser({
           email: user.email,
           uid: user.uid,
-          name: user.displayName || "",
+          name: user.displayName || "기본이름",
           image: user.photoURL,
         });
       } else {
