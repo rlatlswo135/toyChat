@@ -6,7 +6,6 @@ import React, {
   useState,
   useTransition,
 } from "react";
-import { useRouter } from "next/router";
 import { RiCloseLine } from "react-icons/ri";
 import tw from "tailwind-styled-components";
 import profile from "../../public/images/default.png";
@@ -20,14 +19,21 @@ import {
 } from "../../api/store";
 import { Spinner } from "../Spinner";
 import { makeErrorMsg } from "../util/error";
+import { CurrentUser } from "../../provider/AuthProvider";
 
 type InviteProps = {
   setIsInvite: Dispatch<SetStateAction<boolean>>;
   roomInfo: ChatRoom;
   roomId: string;
+  currentUser: CurrentUser | null;
 };
 
-export function Invite({ setIsInvite, roomInfo, roomId }: InviteProps) {
+export function Invite({
+  setIsInvite,
+  roomInfo,
+  roomId,
+  currentUser,
+}: InviteProps) {
   const [initialAccounts, setInitialAccounts] = useState<Account[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -96,6 +102,8 @@ export function Invite({ setIsInvite, roomInfo, roomId }: InviteProps) {
       setAccounts(result);
       setLoading(false);
     }
+    if (!currentUser) {
+    }
     fetchAndSet();
   }, []);
 
@@ -124,17 +132,19 @@ export function Invite({ setIsInvite, roomInfo, roomId }: InviteProps) {
         ) : (
           <>
             <div className="mb-10">
-              {accounts.map(({ uid, email, name, image }) => (
-                <Profile
-                  key={`Invite-${uid}`}
-                  onClick={() => inviteUser(uid, email, name, image)}
-                  name={name}
-                  email={email}
-                  size={20}
-                  padding={2}
-                  src={image || profile}
-                />
-              ))}
+              {accounts
+                .filter((user) => user.uid !== currentUser?.uid)
+                .map(({ uid, email, name, image, isLogin }) => (
+                  <Profile
+                    key={`Invite-${uid}`}
+                    onClick={() => inviteUser(uid, email, name, image)}
+                    name={name}
+                    email={email}
+                    padding={2}
+                    isLogin={isLogin}
+                    src={image || profile}
+                  />
+                ))}
             </div>
             <Empty />
           </>

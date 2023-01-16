@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { FaUserCircle } from "react-icons/fa";
+import { BiLogOut } from "react-icons/bi";
 import tw from "tailwind-styled-components";
 import { logOutAccount } from "../api/auth";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
+import Link from "next/link";
 
 function Header() {
   const router = useRouter();
@@ -17,29 +20,44 @@ function Header() {
       case "/chatlist":
         setTitle("채팅");
         break;
+      case "/my":
+        setTitle("마이페이지");
+        break;
       default:
         setTitle("메뉴");
     }
   }, [router.pathname]);
 
   const logOutHandler = useCallback(async () => {
-    if (!currentUser) {
-      router.push("/home");
-      return;
+    if (currentUser) {
+      const result = await logOutAccount(currentUser.email);
+      if (typeof result === "string") {
+        return;
+      }
     }
-
-    const result = await logOutAccount(currentUser.email);
-    if (typeof result === "string") {
-      return;
-    }
-    router.push("/home");
   }, [currentUser]);
 
   return (
     <div className="flex justify-between p-4">
       <MenuTitle>{title}</MenuTitle>
       <MenuWrap className="flex">
-        <Menu onClick={logOutHandler}>Logout</Menu>
+        <Link
+          href={{
+            pathname: "/my",
+            query: {
+              id: currentUser?.uid,
+            },
+          }}
+        >
+          <Menu>
+            <FaUserCircle size={20} className="mr-1" />
+            <span>MyPage</span>
+          </Menu>
+        </Link>
+        <Menu onClick={logOutHandler}>
+          <BiLogOut size={20} className="mr-1" />
+          <span>Logout</span>
+        </Menu>
       </MenuWrap>
     </div>
   );
@@ -54,5 +72,5 @@ const MenuWrap = tw.ul`
   flex
 `;
 const Menu = tw.li`
-p-2 hover:cursor-pointer hover:bg-hover rounded-xl
+flex items-center p-2 hover:cursor-pointer hover:bg-hover rounded-xl
 `;

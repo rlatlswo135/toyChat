@@ -15,15 +15,6 @@ function MyApp({ router, Component, pageProps }: AppProps) {
   const routes = useCallback(() => {
     switch (pathName) {
       case "/register":
-        return (
-          <>
-            {pageLoading ? (
-              <Spinner text={null} />
-            ) : (
-              <Component {...pageProps} />
-            )}
-          </>
-        );
       case "/home":
         return (
           <AuthProvider>
@@ -39,7 +30,7 @@ function MyApp({ router, Component, pageProps }: AppProps) {
           <AuthProvider>
             <ContentWrap>
               {pageLoading ? (
-                <Spinner text="GetChat..." />
+                <Spinner text="Get Data..." />
               ) : (
                 <>
                   {pathName !== "/chat" && <Header />}

@@ -1,10 +1,12 @@
 import { Dispatch, SetStateAction } from "react";
 import {
+  AUTH_ALREADY_EMAIL,
   AUTH_INVALID_EMAIL,
   AUTH_INVALID_PWD,
   AUTH_NOTFOUND,
   AUTH_REQUEST_FAIL,
   AUTH_WRONG_PWD,
+  MSG_AUTH_ALREADY_EMAIL,
   MSG_AUTH_INVALID_EMAIL,
   MSG_AUTH_INVALID_PWD,
   MSG_AUTH_NOTFOUND,
@@ -26,6 +28,9 @@ export const makeErrorMsg = (
       break;
     case AUTH_REQUEST_FAIL:
       setter(MSG_AUTH_REQUEST_FAIL);
+      break;
+    case AUTH_ALREADY_EMAIL:
+      setter(MSG_AUTH_ALREADY_EMAIL);
       break;
     case AUTH_INVALID_EMAIL:
       setter(MSG_AUTH_INVALID_EMAIL);

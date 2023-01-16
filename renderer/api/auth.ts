@@ -9,7 +9,7 @@ import {
   deleteUser,
 } from "firebase/auth";
 import { usePostCollectionData } from "./hook";
-import { changeLoginState } from "./store";
+import { changeLoginState, deleteAccountInStore } from "./store";
 
 export const getMyAuth = () => getAuth(fbApp);
 
@@ -75,13 +75,15 @@ export const logOutAccount = async (email: string) => {
   }
 };
 
-export const deleteAccount = async () => {
+export const deleteAccount = async (docId: string) => {
   try {
     const fbAuth = getMyAuth();
     const user = fbAuth.currentUser;
     if (fbAuth && user) {
       const result = await deleteUser(user);
-      return result;
+      const resultInStore = await deleteAccountInStore(docId);
+
+      return resultInStore;
     }
   } catch (err: any) {
     console.error(err);

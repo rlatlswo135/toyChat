@@ -9,15 +9,6 @@ type ContentWrapProps = {
 };
 
 function ContentWrap({ children }: ContentWrapProps) {
-  const router = useRouter();
-  const { currentUser } = useAuthContext() as AuthContext;
-
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/home");
-    }
-  }, []);
-
   return (
     <Div>
       <div className="flex flex-col w-full justify-end">

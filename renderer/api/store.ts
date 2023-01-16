@@ -91,15 +91,23 @@ export const getAccountList = async () => {
 };
 
 export const changeLoginState = async (email: string, state: boolean) => {
-  const accountList = await getAccountList();
-  if (typeof accountList === "string") {
-    return accountList;
+  const result = await getAccountList();
+  if (typeof result === "string") {
+    return result;
   }
-  const docId = accountList?.filter((doc) => doc.email === email)[0].docId;
+  const docId = result?.filter((doc) => doc.email === email)[0].docId;
   const data = { isLogin: state };
   if (docId) {
     const result = await useUpdateDocData("accounts", docId, data);
     return result;
   }
   console.error("no have docId -> changeLogin");
+};
+
+export const deleteAccountInStore = async (uid: string) => {
+  const result = await useDeleteDocData("accounts", uid);
+
+  if (typeof result === "string") {
+    return result;
+  }
 };

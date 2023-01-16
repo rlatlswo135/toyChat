@@ -31,7 +31,7 @@ function UserChat({ users }: Users) {
       {users.map(({ image }, idx) => {
         const src = !image ? profile : image;
         return (
-          <DoubleWrap idx={idx} key={`users-img-${idx}`}>
+          <DoubleWrap $idx={idx} key={`users-img-${idx}`}>
             <Image src={src} width="100%" height="100%" />
           </DoubleWrap>
         );
@@ -61,9 +61,9 @@ const SingleWrap = tw.div`
 relative flex justify-center items-center w-full h-full rounded-full overflow-hidden bg-gray-400/20
 `;
 
-const DoubleWrap = tw.div<{ idx: number }>`
+const DoubleWrap = tw.div<{ $idx: number }>`
 absolute bg-gray-500 rounded-xl overflow-hidden w-2/3 h-2/3
-${({ idx }) => (idx === 1 ? "top-2/4 right-0 z-50" : "top-0 left-0")}
+${({ $idx }) => ($idx === 1 ? "top-2/4 right-0 z-50" : "top-0 left-0")}
 `;
 const GroupImages = tw.div`
 grid grid-cols-2 grid-rows-auto gap-2 w-full h-full mr-4 rounded-xl

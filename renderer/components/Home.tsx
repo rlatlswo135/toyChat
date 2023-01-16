@@ -16,7 +16,6 @@ type LoginInfo = {
 
 function Home() {
   const router = useRouter();
-  const { currentUser } = useAuthContext() as AuthContext;
   const [loading, setLoading] = useState<boolean>(false);
   const [errMsg, setErrMsg] = useState<string | null>(null);
   const [loginInfo, setLoginInfo] = useState<LoginInfo>({
@@ -50,14 +49,7 @@ function Home() {
       setLoading(false);
       return;
     }
-    router.push("/users");
   };
-
-  useEffect(() => {
-    if (currentUser) {
-      router.push("/users");
-    }
-  }, []);
 
   return (
     <HomeDiv>

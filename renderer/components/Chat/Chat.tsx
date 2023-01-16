@@ -158,7 +158,12 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
         <SendBtn>Send</SendBtn>
       </form>
       {isInvite && (
-        <Invite setIsInvite={setIsInvite} roomInfo={roomInfo} roomId={roomId} />
+        <Invite
+          setIsInvite={setIsInvite}
+          roomInfo={roomInfo}
+          roomId={roomId}
+          currentUser={currentUser}
+        />
       )}
     </Div>
   );

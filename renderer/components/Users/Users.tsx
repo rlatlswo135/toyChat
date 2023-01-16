@@ -99,34 +99,36 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
         src={currentUser.image || profile}
         name={currentUser.name}
         email={currentUser.email}
+        isLogin
         imgSize={40}
         imgWrapSize={16}
         height={18}
       />
-      <span className="p-5 text-gray-400 font-bold">온라인</span>
+      <LoginState>온라인</LoginState>
       {accountList
         .filter((user) => user.uid !== currentUser?.uid && user.isLogin)
-        .map(({ uid, email, name, image }) => (
+        .map(({ uid, email, name, image, isLogin }) => (
           <Profile
             onClick={() => onClickUserHandler(uid, email, name, image)}
             key={`user-${uid}`}
             src={image || profile}
+            isLogin={isLogin}
             name={name}
             email={email}
             imgSize={40}
           />
         ))}
-      <span className="p-5 text-gray-400 font-bold">오프라인</span>
+      <LoginState>오프라인</LoginState>
       {accountList
         .filter((user) => user.uid !== currentUser?.uid && !user.isLogin)
-        .map(({ uid, email, name, image }) => (
+        .map(({ uid, email, name, image, isLogin }) => (
           <Profile
             onClick={() => onClickUserHandler(uid, email, name, image)}
             key={`user-${uid}`}
             src={image || profile}
+            isLogin={isLogin}
             name={name}
             email={email}
-            imgSize={40}
           />
         ))}
       <Empty />
@@ -135,5 +137,9 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
 }
 
 const Container = tw.div`
-flex flex-col w-full mb-2 h-full
+flex flex-col w-full mb-2 h-full px-5
+`;
+
+const LoginState = tw.span`
+text-gray-400 font-bold py-5
 `;

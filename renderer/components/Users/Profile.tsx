@@ -7,9 +7,10 @@ type ProfileProps = {
   src: StaticImageData | string;
   name: string;
   email: string;
-  imgSize: number | string;
-  imgWrapSize?: number | string;
-  padding?: number | string;
+  isLogin: boolean;
+  imgSize?: number;
+  imgWrapSize?: number;
+  padding?: number;
   height?: number | string;
   className?: string;
 };
@@ -19,24 +20,25 @@ function Profile({
   src,
   name,
   email,
+  isLogin,
   padding = 4,
-  imgSize,
-  imgWrapSize = 12,
-  height = 12,
+  imgSize = 24,
+  imgWrapSize = 10,
+  height = 10,
   className = "",
 }: ProfileProps) {
   return (
     <ContentWrap
       onClick={onClick}
-      padding={padding}
-      height={height}
+      $padding={padding}
+      $height={height}
       className={className}
     >
-      <ImageWrap size={imgWrapSize}>
+      <ImageWrap $size={imgWrapSize}>
         <Image width={imgSize} height={imgSize} src={src} />
       </ImageWrap>
       <InfoWrap>
-        <Name>{name}</Name>
+        <Name $login={isLogin}>{name}</Name>
         <Email>{email}</Email>
       </InfoWrap>
     </ContentWrap>
@@ -46,23 +48,21 @@ function Profile({
 export default Profile;
 
 type Style = string | number;
-const ContentWrap = tw.div<{ padding: Style; height: Style }>`
-${({ padding }) =>
-  typeof padding === "string" ? `px-[${padding}]` : `px-${padding}`}
-${({ height }) =>
-  typeof height === "string" ? `h-[${height}]` : `h-${height}`}
-w-full border-b-2 py-8 border-line flex justify-start items-center hover:cursor-pointer hover:bg-hover
+const ContentWrap = tw.div<{ $padding: Style; $height: Style }>`
+${({ $padding }) => `px-${$padding}`}
+ ${({ $height }) =>
+   typeof $height === "string" ? `h-[${$height}]` : `h-${$height}`}
+ w-full border-b-2 py-8 border-line flex justify-start items-center hover:cursor-pointer hover:bg-hover
 `;
-const ImageWrap = tw.div<{ size: Style }>`
-${({ size }) =>
-  typeof size === "string" ? `w-[${size}] h-[${size}]` : `w-${size} h-${size}`}
-flex justify-center items-center bg-gray-300 rounded-full overflow-hidden
+const ImageWrap = tw.div<{ $size: Style }>`
+${({ $size }) => `w-${$size} h-${$size}`}
+ flex justify-center items-center bg-gray-300 rounded-full overflow-hidden
 `;
 const InfoWrap = tw.div`
 flex flex-col pl-4
 `;
-const Name = tw.span`
-ml-1 font-bold tracking-wide
+const Name = tw.span<{ $login: boolean }>`
+ml-1 font-bold tracking-wide ${({ $login }) => ($login ? "" : "text-logout")}
 `;
 const Email = tw.span`
 ml-1 text-sm tracking-wide text-gray-300/70 max-w-[150px] overflow-hidden text-ellipsis

@@ -6,7 +6,8 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, onIdTokenChanged } from "firebase/auth";
+import { useRouter } from "next/router";
 import { getMyAuth } from "../api/auth";
 
 type ContextProps = {
@@ -27,23 +28,26 @@ export type AuthContext = {
 const authContext = createContext<AuthContext | null>(null);
 
 function AuthProvider({ children }: ContextProps) {
+  const router = useRouter();
   const fbAuth = getMyAuth();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
-    onAuthStateChanged(fbAuth, (user) => {
+    const authChange = onAuthStateChanged(fbAuth, (user) => {
+      console.log(user?.email, user?.uid, user?.displayName, user?.photoURL);
       if (user && user.email && user.uid && user.displayName) {
-        console.log("````````````Provider - current User Set````````````");
-        setCurrentUser({
-          email: user.email,
-          uid: user.uid,
-          name: user.displayName || "기본이름",
-          image: user.photoURL,
-        });
+        const { email, uid, displayName: name, photoURL: image } = user;
+        setCurrentUser({ email, uid, name, image });
+        router.push("/users", undefined, { shallow: true });
       } else {
+        console.log("Provider -> Logout");
         setCurrentUser(null);
+        router.push("/home", undefined, { shallow: true });
       }
     });
+    return () => {
+      authChange();
+    };
   }, []);
 
   const value = useMemo(
