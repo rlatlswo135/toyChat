@@ -7,11 +7,13 @@ import { ChatRoom } from "../../api/store";
 import { Empty } from "../Empty";
 import { ProfileImages } from "./ProfileImages";
 import { timeFormat } from "../util/time";
+import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 
 type ChatListProps = ChatListPage;
 
 // Todo 선택된 채팅있으면 LocalState하나 만들어서 있을시 Chat컴포넌트로 렌더하게
 function ChatList({ initChatRoomList }: ChatListProps) {
+  const { currentUser } = useAuthContext() as AuthContext;
   const [chatRoomList, setChatRoomList] = useCollectionState<ChatRoom>(
     "chatRoom",
     initChatRoomList
@@ -38,10 +40,21 @@ function ChatList({ initChatRoomList }: ChatListProps) {
                 </div>
                 <div className="flex flex-col justify-evenly">
                   <p className="tracking-wide font-semibold text-lg">
-                    {users
-                      .map((item) => item.name)
-                      .slice(0, 4)
-                      .join(",")}
+                    {users.slice(0, 4).map((item) => {
+                      if (item.uid === currentUser?.uid) {
+                        return (
+                          <span key="chatlist-name-Im">
+                            {item.name}
+                            <span className="text-sm text-logout">(나)</span>
+                          </span>
+                        );
+                      }
+                      return (
+                        <span key={`chatlist-name-${item.uid}`}>
+                          {item.name}
+                        </span>
+                      );
+                    })}
                     <span className="pl-2 pb-6 text-xs text-gray-400">
                       {users.length}
                     </span>

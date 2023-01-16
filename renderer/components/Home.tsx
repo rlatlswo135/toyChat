@@ -8,6 +8,7 @@ import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import { ButtonWrap, MyForm } from "./MyForm";
 import { makeErrorMsg } from "./util/error";
 import { useRouter } from "next/router";
+import { ErrorMsg } from "../constants/error";
 
 type LoginInfo = {
   email: string;
@@ -17,7 +18,7 @@ type LoginInfo = {
 function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const [errMsg, setErrMsg] = useState<string | null>(null);
+  const [errMsg, setErrMsg] = useState<ErrorMsg>(null);
   const [loginInfo, setLoginInfo] = useState<LoginInfo>({
     email: "",
     password: "",

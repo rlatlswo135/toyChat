@@ -9,7 +9,7 @@ import {
   deleteUser,
 } from "firebase/auth";
 import { usePostCollectionData } from "./hook";
-import { changeLoginState, deleteAccountInStore } from "./store";
+import { changeLoginState, deleteAccountInStore, ImageType } from "./store";
 
 export const getMyAuth = () => getAuth(fbApp);
 
@@ -24,6 +24,26 @@ export const loginAccount = async (
     console.log("````````````login - result````````````", result);
     await changeLoginState(email, true);
     return result;
+  } catch (err: any) {
+    console.error(err);
+    return err.code;
+  }
+};
+
+export const updateAccount = async (
+  name: string,
+  image: ImageType
+): Promise<void | string> => {
+  try {
+    const fbAuth = getMyAuth();
+    const currentUser = fbAuth.currentUser;
+    if (currentUser) {
+      const update = await updateProfile(currentUser, {
+        displayName: name,
+        photoURL: image,
+      });
+      return update;
+    }
   } catch (err: any) {
     console.error(err);
     return err.code;

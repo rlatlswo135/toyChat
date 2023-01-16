@@ -6,6 +6,7 @@ import {
   AUTH_NOTFOUND,
   AUTH_REQUEST_FAIL,
   AUTH_WRONG_PWD,
+  ErrorMsg,
   MSG_AUTH_ALREADY_EMAIL,
   MSG_AUTH_INVALID_EMAIL,
   MSG_AUTH_INVALID_PWD,
@@ -17,7 +18,7 @@ import {
 
 export const makeErrorMsg = (
   result: string,
-  setter: Dispatch<SetStateAction<string | null>>
+  setter: Dispatch<SetStateAction<ErrorMsg>>
 ) => {
   switch (result) {
     case AUTH_NOTFOUND:

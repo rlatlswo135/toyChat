@@ -8,7 +8,6 @@ type ProfileProps = {
   name: string;
   email: string;
   isLogin: boolean;
-  imgSize?: number;
   imgWrapSize?: number;
   padding?: number;
   height?: number | string;
@@ -22,7 +21,6 @@ function Profile({
   email,
   isLogin,
   padding = 4,
-  imgSize = 24,
   imgWrapSize = 10,
   height = 10,
   className = "",
@@ -35,7 +33,7 @@ function Profile({
       className={className}
     >
       <ImageWrap $size={imgWrapSize}>
-        <Image width={imgSize} height={imgSize} src={src} />
+        <Image layout="fill" src={src} />
       </ImageWrap>
       <InfoWrap>
         <Name $login={isLogin}>{name}</Name>
@@ -49,14 +47,12 @@ export default Profile;
 
 type Style = string | number;
 const ContentWrap = tw.div<{ $padding: Style; $height: Style }>`
-${({ $padding }) => `px-${$padding}`}
- ${({ $height }) =>
-   typeof $height === "string" ? `h-[${$height}]` : `h-${$height}`}
- w-full border-b-2 py-8 border-line flex justify-start items-center hover:cursor-pointer hover:bg-hover
+${({ $padding }) => `px-${$padding}`} ${({ $height }) => `h-${$height}`}
+w-full border-b-2 py-8 border-line flex justify-start items-center hover:cursor-pointer hover:bg-hover
 `;
 const ImageWrap = tw.div<{ $size: Style }>`
 ${({ $size }) => `w-${$size} h-${$size}`}
- flex justify-center items-center bg-gray-300 rounded-full overflow-hidden
+relative flex justify-center items-center bg-gray-300 rounded-full overflow-hidden
 `;
 const InfoWrap = tw.div`
 flex flex-col pl-4

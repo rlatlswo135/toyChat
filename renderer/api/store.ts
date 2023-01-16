@@ -1,4 +1,5 @@
 import { WithFieldValue, arrayUnion, arrayRemove } from "firebase/firestore";
+import { updateAccount } from "./auth";
 import {
   useCollectionData,
   useDeleteDocData,
@@ -7,20 +8,21 @@ import {
   useUpdateDocData,
 } from "./hook";
 
+export type ImageType = string | null;
 export type Account = {
   uid: string;
   email: string;
   docId: string;
   isLogin: boolean;
   name: string;
-  image: string | null;
+  image: ImageType;
 };
 
 export type User = {
   uid: string;
   email: string;
   name: string;
-  image: string | null;
+  image: ImageType;
 };
 
 export type Chat = {
@@ -102,6 +104,19 @@ export const changeLoginState = async (email: string, state: boolean) => {
     return result;
   }
   console.error("no have docId -> changeLogin");
+};
+
+type EditInfo = {
+  image: ImageType;
+  name: string;
+};
+export const changeAccountInfo = async (docId: string, data: EditInfo) => {
+  const update = await updateAccount(data.name, data.image);
+  if (typeof update === "string") {
+    return update;
+  }
+  const result = await useUpdateDocData("accounts", docId, data);
+  return result;
 };
 
 export const deleteAccountInStore = async (uid: string) => {

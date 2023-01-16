@@ -4,7 +4,13 @@ import tw from "tailwind-styled-components";
 import { isEqual } from "lodash";
 import React, { useCallback } from "react";
 import { useCollectionState } from "../../api/hook";
-import { Account, ChatRoom, postChatRoom, User } from "../../api/store";
+import {
+  Account,
+  ChatRoom,
+  ImageType,
+  postChatRoom,
+  User,
+} from "../../api/store";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { Empty } from "../Empty";
 import { getNow } from "../util/time";
@@ -25,7 +31,7 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
   );
 
   const onClickUserHandler = useCallback(
-    (uid: string, email: string, name: string, image: string | null) => {
+    (uid: string, email: string, name: string, image: ImageType) => {
       if (!currentUser) return;
 
       const users = [] as User[];
@@ -52,7 +58,7 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
   );
 
   const createChatRoom = useCallback(
-    async (uid: string, email: string, name: string, image: string | null) => {
+    async (uid: string, email: string, name: string, image: ImageType) => {
       if (!currentUser) {
         return;
       }
@@ -105,7 +111,6 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
         name={currentUser.name}
         email={currentUser.email}
         isLogin
-        imgSize={40}
         imgWrapSize={16}
         height={18}
       />
@@ -120,7 +125,6 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
             isLogin={isLogin}
             name={name}
             email={email}
-            imgSize={40}
           />
         ))}
       <LoginState>오프라인</LoginState>

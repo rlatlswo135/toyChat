@@ -1,3 +1,4 @@
+export type ErrorMsg = string | null;
 export const AUTH_NOTFOUND = "auth/user-not-found";
 export const AUTH_WRONG_PWD = "auth/wrong-password";
 export const AUTH_REQUEST_FAIL = "auth/network-request-failed";

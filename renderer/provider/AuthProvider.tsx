@@ -9,6 +9,7 @@ import React, {
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import { getMyAuth } from "../api/auth";
+import { ImageType } from "../api/store";
 
 type ContextProps = {
   children: ReactNode;
@@ -18,7 +19,7 @@ export type CurrentUser = {
   email: string;
   uid: string;
   name: string;
-  image: string | null;
+  image: ImageType;
 };
 
 export type AuthContext = {

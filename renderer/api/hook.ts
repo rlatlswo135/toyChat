@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { Router } from "next/router";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { ErrorMsg } from "../constants/error";
 import { fbDb } from "./firebase";
 
 type Collection = "accounts" | "chatRoom";
@@ -30,7 +31,7 @@ export const useCollectionState = <T>(
         ...item.data(),
         docId: item.id,
       })) as T[];
-
+      console.log("collection observer", result);
       setDocs(result);
     });
   }, []);
@@ -148,7 +149,7 @@ export const useDeleteDocData = async (colName: Collection, docId: string) => {
 
 export const usePageLoading = () => {
   const [pageLoading, setPageLoading] = useState<boolean>(false);
-  const [errMsg, setErrMsg] = useState<string | null>(null);
+  const [errMsg, setErrMsg] = useState<ErrorMsg>(null);
 
   useEffect(() => {
     const routeStartEvent = () => setPageLoading(true);

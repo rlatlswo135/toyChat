@@ -15,11 +15,13 @@ import {
   Account,
   ChatRoom,
   getAccountList,
+  ImageType,
   inviteUserInChatRoom,
 } from "../../api/store";
 import { Spinner } from "../Spinner";
 import { makeErrorMsg } from "../util/error";
 import { CurrentUser } from "../../provider/AuthProvider";
+import { ErrorMsg } from "../../constants/error";
 
 type InviteProps = {
   setIsInvite: Dispatch<SetStateAction<boolean>>;
@@ -37,7 +39,7 @@ export function Invite({
   const [initialAccounts, setInitialAccounts] = useState<Account[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [errMsg, setErrMsg] = useState<string | null>(null);
+  const [errMsg, setErrMsg] = useState<ErrorMsg>(null);
   const [flag, setFlag] = useState<string>("");
 
   const [isPending, startTransition] = useTransition();
@@ -59,7 +61,7 @@ export function Invite({
   );
 
   const inviteUser = useCallback(
-    async (uid: string, email: string, name: string, image: string | null) => {
+    async (uid: string, email: string, name: string, image: ImageType) => {
       const { users } = roomInfo;
       if (users.findIndex((user) => user.uid === uid) >= 0) {
         console.log("````````````이미 존재하는 유저````````````");
