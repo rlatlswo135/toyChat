@@ -12,6 +12,9 @@ $ npm run dev
 ### 1:1채팅
 
 <p align="center"><img src="https://user-images.githubusercontent.com/81791674/212959148-fd10a128-5d61-41b2-940e-6a2fc74db5d9.png"></p>
+```
+Nav -> User -> 유저 클릭시 채팅방 생성 (싱글채팅 or 1:1채팅)
+```
 
 ### 그룹채팅
 
