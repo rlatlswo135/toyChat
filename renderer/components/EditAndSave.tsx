@@ -4,11 +4,16 @@ import tw from "tailwind-styled-components";
 type EditAndSaveProps = {
   yesHandler: () => void;
   noHandler: () => void;
+  question?: string;
 };
-export const EditAndSave = ({ yesHandler, noHandler }: EditAndSaveProps) => {
+export const EditAndSave = ({
+  yesHandler,
+  noHandler,
+  question = "Sure?",
+}: EditAndSaveProps) => {
   return (
     <div className="flex items-center">
-      <Question>Sure?</Question>
+      <Question>{question}</Question>
       <Yes onClick={yesHandler}>Yes</Yes>
       <No onClick={noHandler}>No</No>
     </div>

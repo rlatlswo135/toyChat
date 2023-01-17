@@ -1,6 +1,6 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { AiOutlineEdit } from "react-icons/ai";
+import { AiOutlineEdit, AiFillCloseCircle } from "react-icons/ai";
 import tw from "tailwind-styled-components";
 import Image from "next/image";
 import { isEqual } from "lodash";
@@ -14,20 +14,24 @@ import { LIMIT } from "../constants/image";
 import { EditAndSave } from "./EditAndSave";
 import { changeAccountInfo, ImageType } from "../api/store";
 import { ErrorMsg } from "../constants/error";
+import { base64ToArrayBuffer } from "../api/storage";
+import { ref, uploadBytes } from "firebase/storage";
+import { fbStorage } from "../api/firebase";
 
 type MyProps = MyPage;
 export function My({ docId }: MyProps) {
   const router = useRouter();
   const nameRef = useRef<HTMLInputElement | null>(null);
   const imageRef = useRef<HTMLInputElement | null>(null);
-  console.log("````````````docId````````````", docId);
   const { currentUser } = useAuthContext() as AuthContext;
 
+  console.log("````````````currentUser````````````", currentUser);
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
 
   const [name, setName] = useState<string>(currentUser?.name || "");
   const [image, setImage] = useState<ImageType>(currentUser?.image || null);
+  const [uploadImg, setUploadImg] = useState<File | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [errMsg, setErrMsg] = useState<ErrorMsg>(null);
@@ -53,10 +57,12 @@ export function My({ docId }: MyProps) {
   }, []);
   // ** cancel
   const cancelDelete = useCallback(() => setIsDelete(false), []);
+
   const cancelEdit = useCallback(() => {
+    console.log("````````````initial````````````", currentUser?.image || null);
     setImage(currentUser?.image || null);
     setName(currentUser?.name || "");
-  }, [currentUser]);
+  }, [currentUser, image]);
 
   // ** confirm
   const confirmDelete = useCallback(async () => {
@@ -75,48 +81,80 @@ export function My({ docId }: MyProps) {
     }
   }, [currentUser]);
 
+  console.log("````````````uploadImg````````````", uploadImg);
   const confirmEdit = async () => {
-    if (currentUser) {
-      if (docId) {
-        const result = await changeAccountInfo(docId, {
-          image,
-          name,
-        });
+    console.log("confirm", uploadImg);
+    if (!uploadImg || !currentUser) {
+      console.log("no auth");
+      return;
+    }
 
-        if (typeof result === "string") {
-          makeErrorMsg(result, setErrMsg);
-          return;
-        }
-        router.push("/users");
+    try {
+      console.log("start upload");
+      const imageRef = ref(fbStorage, `images/${currentUser.uid}`);
+      const blob = await fetch(image as string).then((item) => item.blob());
+      let atob;
+      if (image) {
+        atob = base64ToArrayBuffer(image.split(",")[1]);
       }
+      // console.log("blob", blob);
+      console.log("atob", atob);
+      uploadBytes(imageRef, uploadImg).then((res) => {
+        console.log("res", res);
+        alert("이미지 업로드 완료");
+      });
+    } catch (err) {
+      console.error(err);
     }
   };
 
+  const deleteImg = () => {
+    setImage(null);
+  };
   // Todo: Image를 수정후 uid를 넣어서 해줘야하니까 로그인 이후 마이페이지에서 수정하게끔 바꿔보자
   const changeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files;
-    if (file?.length) {
-      if (file[0].size > LIMIT) {
-        console.error("사이즈");
-        return;
-      }
-      const src = URL.createObjectURL(file[0]);
-      setImage(src);
+    if (!file || !file.length) return;
+
+    const reader = new FileReader();
+    if (file[0].size > LIMIT) {
+      console.error("사이즈");
+      return;
     }
+    console.log("file", file[0]);
+    setUploadImg(file[0]);
+
+    // // gc때문에 URL.create대신
+    reader.readAsDataURL(file[0]);
+    reader.onloadend = () => {
+      setImage(reader.result as string);
+    };
   };
 
   return (
     <>
       <Container>
         <Wrap>
-          <ImageWrap className="group/edit" onClick={onClickEditImage}>
-            <Image src={image || profile} layout="fill" className="border-2" />
-            <EditImage>Edit</EditImage>
-          </ImageWrap>
-          <Edit onClick={startEditMode} title="edit_name">
-            <AiOutlineEdit size="100%" />
-          </Edit>
-          <div className="flex flex-col items-center justify-center">
+          <div className="relative">
+            <ImageWrap className="group/edit" onClick={onClickEditImage}>
+              <Image
+                src={image || profile}
+                layout="fill"
+                className="border-2"
+              />
+              <EditImage>Edit</EditImage>
+            </ImageWrap>
+            {image && (
+              <button
+                title="delete_img"
+                className="absolute top-0 right-[-7%] w-8 h-8"
+                onClick={deleteImg}
+              >
+                <AiFillCloseCircle size="100%" />
+              </button>
+            )}
+          </div>
+          <div className="flex flex-col relative items-center justify-center group/name">
             <NameInput
               title="edit_name_input"
               type="text"
@@ -130,14 +168,27 @@ export function My({ docId }: MyProps) {
                 }
               }}
             />
+            {!editMode && (
+              <Edit onClick={startEditMode} title="edit_name">
+                Edit
+              </Edit>
+            )}
           </div>
           <Email>{currentUser?.email}</Email>
           {!loading && <Delete onClick={onClickDelete}>Delete</Delete>}
           {isEdit && (
-            <EditAndSave yesHandler={confirmEdit} noHandler={cancelEdit} />
+            <EditAndSave
+              yesHandler={confirmEdit}
+              noHandler={cancelEdit}
+              question="Edit?"
+            />
           )}
           {isDelete && (
-            <EditAndSave yesHandler={confirmDelete} noHandler={cancelDelete} />
+            <EditAndSave
+              yesHandler={confirmDelete}
+              noHandler={cancelDelete}
+              question="Delete?"
+            />
           )}
           {errMsg && <div className="pt-10">{errMsg}</div>}
         </Wrap>
@@ -174,6 +225,7 @@ flex justify-center items-center overflow-hidden
 const NameInput = tw.input`
 font-bold tracking-wide text-5xl mb-4 
 bg-none outline-none text-white bg-transparent text-center
+hover:bg-hover
 `;
 const Email = tw.p`
 text-time mb-4 text-xl
@@ -182,7 +234,10 @@ const Delete = tw.button`
 py-6 mb-6 px-12 bg-gray-400 rounded-xl text-xl font-bold hover:bg-hover
 `;
 const Edit = tw.button`
-flex items-center justify-center absolute top-[48%] right-[25%] w-8 h-8
+flex invisible items-center justify-center absolute w-full h-full z-50
+text-4xl font-bold
+group-hover/name:visible hover:bg-hover/70
+
 `;
 const EditImage = tw.p`
 invisible absolute top-[40%] text-4xl z-50 group-hover/edit:visible

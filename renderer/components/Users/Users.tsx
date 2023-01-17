@@ -107,7 +107,7 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
             currentUser.image
           )
         }
-        src={currentUser.image || profile}
+        src={profile}
         name={currentUser.name}
         email={currentUser.email}
         isLogin

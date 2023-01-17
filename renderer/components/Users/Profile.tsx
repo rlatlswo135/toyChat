@@ -2,6 +2,14 @@ import React from "react";
 import tw from "tailwind-styled-components";
 import Image, { StaticImageData } from "next/image";
 
+type ImageWrapSize = {
+  [key: string]: string;
+};
+const imageWrapSizes: ImageWrapSize = {
+  16: "w-16 h-16",
+  10: "w-10 h-10",
+};
+
 type ProfileProps = {
   onClick: () => void;
   src: StaticImageData | string;
@@ -21,8 +29,8 @@ function Profile({
   email,
   isLogin,
   padding = 4,
+  height = 16,
   imgWrapSize = 10,
-  height = 10,
   className = "",
 }: ProfileProps) {
   return (
@@ -32,7 +40,8 @@ function Profile({
       $height={height}
       className={className}
     >
-      <ImageWrap $size={imgWrapSize}>
+      {/* tailwindcss 는 텍스트가 박힌채로 동적렌더해야함 */}
+      <ImageWrap className={imageWrapSizes[String(imgWrapSize)]}>
         <Image layout="fill" src={src} />
       </ImageWrap>
       <InfoWrap>
@@ -50,9 +59,9 @@ const ContentWrap = tw.div<{ $padding: Style; $height: Style }>`
 ${({ $padding }) => `px-${$padding}`} ${({ $height }) => `h-${$height}`}
 w-full border-b-2 py-8 border-line flex justify-start items-center hover:cursor-pointer hover:bg-hover
 `;
-const ImageWrap = tw.div<{ $size: Style }>`
-${({ $size }) => `w-${$size} h-${$size}`}
+const ImageWrap = tw.div`
 relative flex justify-center items-center bg-gray-300 rounded-full overflow-hidden
+border-2
 `;
 const InfoWrap = tw.div`
 flex flex-col pl-4

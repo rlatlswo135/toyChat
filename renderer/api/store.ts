@@ -7,6 +7,7 @@ import {
   usePostCollectionData,
   useUpdateDocData,
 } from "./hook";
+import { uploadFile } from "./storage";
 
 export type ImageType = string | null;
 export type Account = {
@@ -37,7 +38,6 @@ export type ChatRoom = {
   users: User[];
   createdAt: string;
 };
-
 // ********************** chatroom
 export const getChatroomList = async () => {
   const result = await useCollectionData<ChatRoom>("chatRoom");
@@ -107,16 +107,24 @@ export const changeLoginState = async (email: string, state: boolean) => {
 };
 
 type EditInfo = {
-  image: ImageType;
+  image: string | null;
   name: string;
 };
-export const changeAccountInfo = async (docId: string, data: EditInfo) => {
-  const update = await updateAccount(data.name, data.image);
-  if (typeof update === "string") {
-    return update;
+export const changeAccountInfo = async (
+  docId: string,
+  uid: string,
+  data: EditInfo
+) => {
+  if (data.image) {
+    const upload = await uploadFile(uid, data.image);
+    console.log("````````````upload````````````", upload);
   }
-  const result = await useUpdateDocData("accounts", docId, data);
-  return result;
+  // const update = await updateAccount(name, photoUrl);
+  // if (typeof update === "string") {
+  //   return update;
+  // }
+  // const result = await useUpdateDocData("accounts", docId, data);
+  // return result;
 };
 
 export const deleteAccountInStore = async (uid: string) => {

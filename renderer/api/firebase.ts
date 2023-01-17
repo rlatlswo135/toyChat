@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import admin from "firebase-admin";
+import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 // 나중에 env처리
@@ -20,7 +22,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const fbApp = initializeApp(firebaseConfig);
 const fbDb = getFirestore(fbApp);
+const fbStorage = getStorage(fbApp);
+const fbAuth = getAuth(fbApp);
 
-const getUserList = async () => {};
-
-export { fbApp, fbDb, getUserList };
+export { fbApp, fbDb, fbStorage, fbAuth };

@@ -8,8 +8,8 @@ import React, {
 } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
-import { getMyAuth } from "../api/auth";
 import { ImageType } from "../api/store";
+import { fbAuth } from "../api/firebase";
 
 type ContextProps = {
   children: ReactNode;
@@ -30,13 +30,12 @@ const authContext = createContext<AuthContext | null>(null);
 
 function AuthProvider({ children }: ContextProps) {
   const router = useRouter();
-  const fbAuth = getMyAuth();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   //! Register에서 언마운트됬을때 다시 이벤트를 Set하는게 핵심 updateProfile보다 이벤트옵저버가 더 빨라서 업데이트된게 안들어온다..
   useEffect(() => {
     const authChange = onAuthStateChanged(fbAuth, (user) => {
-      console.log("Provider -> user", user?.displayName);
+      console.log("Provider -> user", user);
       if (user && user.email && user.uid && user.displayName) {
         const { email, uid, photoURL: image, displayName: name } = user;
         setCurrentUser({ email, uid, name: name || "기본", image });

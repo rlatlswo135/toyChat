@@ -1,4 +1,4 @@
-import { fbApp, fbDb } from "./firebase";
+import { fbApp, fbAuth, fbDb } from "./firebase";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -11,14 +11,11 @@ import {
 import { usePostCollectionData } from "./hook";
 import { changeLoginState, deleteAccountInStore, ImageType } from "./store";
 
-export const getMyAuth = () => getAuth(fbApp);
-
 export const loginAccount = async (
   email: string,
   password: string
 ): Promise<UserCredential | string> => {
   try {
-    const fbAuth = getMyAuth();
     await fbAuth.setPersistence(browserLocalPersistence);
     const result = await signInWithEmailAndPassword(fbAuth, email, password);
     console.log("````````````login - result````````````", result);
@@ -32,16 +29,16 @@ export const loginAccount = async (
 
 export const updateAccount = async (
   name: string,
-  image: ImageType
+  photoURL: ImageType
 ): Promise<void | string> => {
   try {
-    const fbAuth = getMyAuth();
     const currentUser = fbAuth.currentUser;
     if (currentUser) {
       const update = await updateProfile(currentUser, {
         displayName: name,
-        photoURL: image,
+        photoURL,
       });
+      console.log("update", update);
       return update;
     }
   } catch (err: any) {
@@ -56,7 +53,6 @@ export const createAccount = async (
   password: string
 ) => {
   try {
-    const fbAuth = getMyAuth();
     const { user } = await createUserWithEmailAndPassword(
       fbAuth,
       email,
@@ -85,7 +81,6 @@ export const createAccount = async (
 
 export const logOutAccount = async (email: string) => {
   try {
-    const fbAuth = getMyAuth();
     const data = await fbAuth.signOut();
     changeLoginState(email, false);
     return data;
@@ -97,7 +92,6 @@ export const logOutAccount = async (email: string) => {
 
 export const deleteAccount = async (docId: string) => {
   try {
-    const fbAuth = getMyAuth();
     const user = fbAuth.currentUser;
     if (fbAuth && user) {
       const result = await deleteUser(user);
