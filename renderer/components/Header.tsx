@@ -38,7 +38,7 @@ function Header() {
   }, [currentUser]);
 
   return (
-    <div className="flex justify-between p-4">
+    <Container>
       <MenuTitle>{title}</MenuTitle>
       <MenuWrap className="flex">
         <Link
@@ -59,17 +59,22 @@ function Header() {
           <span>Logout</span>
         </Menu>
       </MenuWrap>
-    </div>
+    </Container>
   );
 }
 
 export default React.memo(Header);
 
+const Container = tw.div`
+flex justify-evenly pt-2 items-center
+sm:p-4 sm:justify-between
+`;
 const MenuTitle = tw.h1`
-font-bold text-xl
+font-bold text-lg
+sm:text-xl
 `;
 const MenuWrap = tw.ul`
-  flex
+flex
 `;
 const Menu = tw.li`
 flex items-center p-2 hover:cursor-pointer hover:bg-hover rounded-xl

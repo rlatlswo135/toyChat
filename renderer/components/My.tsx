@@ -210,15 +210,17 @@ export function My({ docId }: MyProps) {
 }
 
 const Container = tw.div`
-  relative flex flex-col flex-1 items-center py-52 overflow-y-hidden
+relative flex flex-col pt-20 flex-1 items-center overflow-y-hidden
+sm:pt-32 lg:pt-40 xl:py-52
 `;
 const Wrap = tw.div`
 relative flex flex-col items-center
 `;
 const ImageWrap = tw.div`
-relative border-2 border-line relative w-60 h-60 rounded-full mb-8
+relative border-2 border-line relative w-32 h-32 rounded-full mb-8
 hover:bg-hover hover:cursor-pointer
 flex justify-center items-center overflow-hidden
+xl:w-60 xl:h-60
 `;
 const NameInput = tw.input`
 font-bold tracking-wide text-5xl mb-4 
