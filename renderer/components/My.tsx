@@ -14,9 +14,7 @@ import { LIMIT } from "../constants/image";
 import { EditAndSave } from "./EditAndSave";
 import { changeAccountInfo, ImageType } from "../api/store";
 import { ErrorMsg } from "../constants/error";
-import { base64ToArrayBuffer } from "../api/storage";
-import { ref, uploadBytes } from "firebase/storage";
-import { fbStorage } from "../api/firebase";
+import { uploadFile } from "../api/storage";
 
 type MyProps = MyPage;
 export function My({ docId }: MyProps) {
@@ -31,7 +29,6 @@ export function My({ docId }: MyProps) {
 
   const [name, setName] = useState<string>(currentUser?.name || "");
   const [image, setImage] = useState<ImageType>(currentUser?.image || null);
-  const [uploadImg, setUploadImg] = useState<File | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [errMsg, setErrMsg] = useState<ErrorMsg>(null);
@@ -81,28 +78,21 @@ export function My({ docId }: MyProps) {
     }
   }, [currentUser]);
 
-  console.log("````````````uploadImg````````````", uploadImg);
   const confirmEdit = async () => {
-    console.log("confirm", uploadImg);
-    if (!uploadImg || !currentUser) {
+    if (!currentUser || !docId) {
       console.log("no auth");
       return;
     }
 
     try {
       console.log("start upload");
-      const imageRef = ref(fbStorage, `images/${currentUser.uid}`);
-      const blob = await fetch(image as string).then((item) => item.blob());
-      let atob;
       if (image) {
-        atob = base64ToArrayBuffer(image.split(",")[1]);
+        const result = await uploadFile(image);
       }
-      // console.log("blob", blob);
-      console.log("atob", atob);
-      uploadBytes(imageRef, uploadImg).then((res) => {
-        console.log("res", res);
-        alert("이미지 업로드 완료");
-      });
+      // const result = await changeAccountInfo(docId, currentUser.uid, {
+      //   image,
+      //   name,
+      // });
     } catch (err) {
       console.error(err);
     }
@@ -122,7 +112,6 @@ export function My({ docId }: MyProps) {
       return;
     }
     console.log("file", file[0]);
-    setUploadImg(file[0]);
 
     // // gc때문에 URL.create대신
     reader.readAsDataURL(file[0]);

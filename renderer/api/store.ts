@@ -115,16 +115,17 @@ export const changeAccountInfo = async (
   uid: string,
   data: EditInfo
 ) => {
-  if (data.image) {
-    const upload = await uploadFile(uid, data.image);
-    console.log("````````````upload````````````", upload);
-  }
-  // const update = await updateAccount(name, photoUrl);
-  // if (typeof update === "string") {
-  //   return update;
+  // if (data.image) {
+  //   const upload = await uploadFile(data.image);
+  //   console.log("````````````upload````````````", upload);
   // }
-  // const result = await useUpdateDocData("accounts", docId, data);
-  // return result;
+  const { name, image: photoURL } = data;
+  const update = await updateAccount(name, photoURL);
+  if (typeof update === "string") {
+    return update;
+  }
+  const result = await useUpdateDocData("accounts", docId, data);
+  return result;
 };
 
 export const deleteAccountInStore = async (uid: string) => {
