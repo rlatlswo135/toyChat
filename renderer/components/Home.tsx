@@ -56,12 +56,13 @@ function Home() {
           changeHandler={changeHandler}
           submitHandler={signIn}
           submitText="Login"
-        />
-        <ButtonWrap>
-          <Link href="/register">
-            <button className="w-full h-full">Sign Up</button>
-          </Link>
-        </ButtonWrap>
+        >
+          <ButtonWrap>
+            <Link href="/register">
+              <button className="w-full h-full">Sign Up</button>
+            </Link>
+          </ButtonWrap>
+        </MyForm>
         {loading && (
           <div className="relative top-5">
             <PuffLoader color="white" />
@@ -80,7 +81,7 @@ flex h-full flex-col justify-center items-center
 `;
 
 export const HomeTitleDiv = tw.div`
-  p-12 text-7xl font-bold
+text-4xl font-bold p-12 sm:text-7xl
 `;
 
 export const HomeContentDiv = tw.div`

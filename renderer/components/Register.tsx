@@ -90,12 +90,13 @@ function Register() {
           changeHandler={changeHandler}
           submitHandler={submitHandler}
           submitText="Sign Up"
-        />
-        <ButtonWrap>
-          <Link href="/home">
-            <button className="w-full h-full">Go Home</button>
-          </Link>
-        </ButtonWrap>
+        >
+          <ButtonWrap>
+            <Link href="/home">
+              <button className="w-full h-full">Go Home</button>
+            </Link>
+          </ButtonWrap>
+        </MyForm>
         {loading && <Spinner className="pt-5" size={100} text="SignUp..." />}
         {errMsg && <Error>{errMsg}</Error>}
       </HomeContentDiv>
@@ -106,5 +107,7 @@ function Register() {
 export default React.memo(Register);
 
 const ImageWrap = tw.div`
-relative w-60 h-60 p-5 rounded-full overflow-hidden
+hidden relative w-24 h-24 p-5 rounded-full overflow-hidden
+md:block md:w-40 md:h-40 xl:w-60 xl:h-60
 `;
+// sm:hidden xl:relative

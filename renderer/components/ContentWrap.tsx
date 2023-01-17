@@ -31,7 +31,8 @@ const Div = tw.div`
 flex flex-col h-full
 `;
 const Title = tw.h1`
-pt-24 py-12 text-center text-8xl font-bold
+hidden pt-24 py-12 text-center text-8xl font-bold
+xl:block
 `;
 const Wrap = tw.div`
 flex flex-1 overflow-x-hidden overflow-y-hidden rounded-xl

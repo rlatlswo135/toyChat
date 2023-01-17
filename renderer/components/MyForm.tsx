@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, ReactNode, SetStateAction } from "react";
 import tw from "tailwind-styled-components";
 
 type FormData = {
@@ -14,25 +14,26 @@ type MyFormProps = {
   changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
   submitHandler: (e: React.SyntheticEvent) => void;
   submitText?: string;
+  children?: ReactNode;
 };
 
 export function MyForm({
   formData,
   changeHandler,
   submitHandler,
+  children,
   submitText = "submit",
 }: MyFormProps) {
   // ! 렌더링 생각하면 form을 하나씩 해야할텐데..
   return (
-    <form onSubmit={submitHandler}>
+    <Form onSubmit={submitHandler}>
       {formData.map((form) => {
         const { name, value, type, onBlur, placeHolder } = form;
 
         return (
           <div className="m-5 w-96" key={`form-${name}`}>
-            <input
+            <Input
               required
-              className="px-3 py-2 w-full"
               type={type || "text"}
               name={name}
               onChange={changeHandler}
@@ -48,10 +49,17 @@ export function MyForm({
           {submitText}
         </button>
       </ButtonWrap>
-    </form>
+      {children && children}
+    </Form>
   );
 }
 
 export const ButtonWrap = tw.div`
 mx-auto mb-3 p-2 text-center bg-gray-500 hover:bg-gray-300 w-96 text-2xl rounded
+`;
+const Form = tw.form`
+
+`;
+const Input = tw.input`
+px-3 py-2 w-full
 `;

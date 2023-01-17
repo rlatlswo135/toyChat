@@ -58,5 +58,6 @@ function MyApp({ router, Component, pageProps }: AppProps) {
 export default MyApp;
 
 const Container = tw.div`
-flex flex-col max-h-screen h-screen w-screen overflow-auto relative px-28 py-12
+flex flex-col max-h-screen h-screen w-screen overflow-auto relative
+lg:px-28 lg:py-12
 `;
