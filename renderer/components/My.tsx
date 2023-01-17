@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { AiOutlineEdit, AiFillCloseCircle } from "react-icons/ai";
+import { AiFillCloseCircle } from "react-icons/ai";
 import tw from "tailwind-styled-components";
 import Image from "next/image";
 import { isEqual } from "lodash";
 import profile from "../public/images/default.png";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
-import { makeErrorMsg } from "./util/error";
+import { checkError } from "./util/error";
 import { deleteAccount } from "../api/auth";
 import { Spinner } from "./Spinner";
 import { MyPage } from "../pages/my";
@@ -14,7 +14,6 @@ import { LIMIT } from "../constants/image";
 import { EditAndSave } from "./EditAndSave";
 import { changeAccountInfo, ImageType } from "../api/store";
 import { ErrorMsg } from "../constants/error";
-import { uploadFile } from "../api/storage";
 
 type MyProps = MyPage;
 export function My({ docId }: MyProps) {
@@ -23,7 +22,6 @@ export function My({ docId }: MyProps) {
   const imageRef = useRef<HTMLInputElement | null>(null);
   const { currentUser } = useAuthContext() as AuthContext;
 
-  console.log("````````````currentUser````````````", currentUser);
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
 
@@ -37,6 +35,8 @@ export function My({ docId }: MyProps) {
     { image: currentUser?.image, name: currentUser?.name },
     { image, name }
   );
+
+  useEffect(() => {}, [currentUser]);
 
   // ** event handler
   const onClickDelete = useCallback(() => setIsDelete(true), []);
@@ -68,10 +68,8 @@ export function My({ docId }: MyProps) {
 
       if (docId) {
         const result = await deleteAccount(docId);
-        if (typeof result === "string") {
-          makeErrorMsg(result, setErrMsg);
-          return;
-        }
+        const e = checkError(result, setErrMsg, setLoading);
+        if (e) return;
       }
       setLoading(false);
       setIsDelete(false);
@@ -79,22 +77,30 @@ export function My({ docId }: MyProps) {
   }, [currentUser]);
 
   const confirmEdit = async () => {
+    setLoading(true);
     if (!currentUser || !docId) {
       console.log("no auth");
+      setLoading(false);
       return;
     }
 
     try {
       console.log("start upload");
-      if (image) {
-        const result = await uploadFile(image);
-      }
-      // const result = await changeAccountInfo(docId, currentUser.uid, {
-      //   image,
-      //   name,
-      // });
-    } catch (err) {
+
+      // * base64는 길다하고 url blob쓰자니 셋될때마다 URL.선언해줘야하는데 흠,,
+      const result = await changeAccountInfo(docId, currentUser.uid, {
+        image,
+        name,
+      });
+      const e = checkError(result, setErrMsg, setLoading);
+      if (e) return;
+
+      router.push("/users");
+      setLoading(false);
+    } catch (err: any) {
       console.error(err);
+      setLoading(false);
+      return err.code;
     }
   };
 
@@ -105,19 +111,22 @@ export function My({ docId }: MyProps) {
   const changeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files;
     if (!file || !file.length) return;
-
-    const reader = new FileReader();
     if (file[0].size > LIMIT) {
       console.error("사이즈");
       return;
     }
     console.log("file", file[0]);
 
-    // // gc때문에 URL.create대신
-    reader.readAsDataURL(file[0]);
-    reader.onloadend = () => {
-      setImage(reader.result as string);
-    };
+    // * URL
+    const url = URL.createObjectURL(file[0]);
+    setImage(url);
+
+    // * base64
+    // const reader = new FileReader();
+    // reader.readAsDataURL(file[0]);
+    // reader.onloadend = () => {
+    //   setImage(reader.result as string);
+    // };
   };
 
   return (

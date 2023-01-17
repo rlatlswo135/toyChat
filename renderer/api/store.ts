@@ -1,4 +1,9 @@
-import { WithFieldValue, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  WithFieldValue,
+  arrayUnion,
+  arrayRemove,
+  QueryConstraint,
+} from "firebase/firestore";
 import { updateAccount } from "./auth";
 import {
   useCollectionData,
@@ -7,7 +12,6 @@ import {
   usePostCollectionData,
   useUpdateDocData,
 } from "./hook";
-import { uploadFile } from "./storage";
 
 export type ImageType = string | null;
 export type Account = {
@@ -30,6 +34,7 @@ export type Chat = {
   content: string;
   sendInfo: User;
   createdAt: string;
+  isSystem?: boolean;
 };
 
 export type ChatRoom = {
@@ -39,8 +44,8 @@ export type ChatRoom = {
   createdAt: string;
 };
 // ********************** chatroom
-export const getChatroomList = async () => {
-  const result = await useCollectionData<ChatRoom>("chatRoom");
+export const getChatroomList = async (query?: QueryConstraint) => {
+  const result = await useCollectionData<ChatRoom>("chatRoom", query);
   return result;
 };
 
@@ -115,6 +120,7 @@ export const changeAccountInfo = async (
   uid: string,
   data: EditInfo
 ) => {
+  // * upload
   // if (data.image) {
   //   const upload = await uploadFile(data.image);
   //   console.log("````````````upload````````````", upload);

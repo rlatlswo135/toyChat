@@ -1,4 +1,10 @@
-import React, { useCallback, useLayoutEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { ImExit } from "react-icons/im";
 import { FcInvite } from "react-icons/fc";
@@ -12,7 +18,7 @@ import {
 import { postChatData } from "../../api/store";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
-import { getNow, timeFormat } from "../util/time";
+import { getNow, getNowDate, timeFormat, toYear } from "../util/time";
 import { useRouter } from "next/router";
 import { useDocState } from "../../api/hook";
 import { ChatPage } from "../../pages/chat";
@@ -25,6 +31,7 @@ type ChatProps = ChatPage;
 // 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
 function Chat({ initRoomInfo, roomId }: ChatProps) {
   const router = useRouter();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const { currentUser } = useAuthContext() as AuthContext;
   const [roomInfo] = useDocState<ChatRoom>("chatRoom", roomId, initRoomInfo);
   const [chatContent, setChatContent] = useState<string>("");
@@ -40,16 +47,19 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
   );
 
   const submitHandler = (e: React.SyntheticEvent) => {
-    // Todo 챗전달후 포커스 아래로 + 빠르게보낼시 안보내지는거 확인 (실제데이터 들어가는지까지)
-    // Todo 너무 빨리 시도했습니다 같은 UI업데이트위해 db에 업데이트중인지 확인해야할듯
     e.preventDefault();
+    // * 타임스탬프같은경우는 chatList에서 getNow와 동일한 MM-dd가없을때 채팅데이터(타임스탬프)를 추가도 더 post해주면 될듯?
     if (currentUser) {
       const data = {
         content: chatContent,
         sendInfo: { ...currentUser },
         createdAt: getNow(),
+        isSystem: false,
       };
       postChatData(roomId, data);
+      setTimeout(() => {
+        pushToScroll;
+      }, 50);
       setChatContent("");
     }
   };
@@ -68,14 +78,29 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
       } else {
         if (currentUser) {
           console.log("````````````나가기````````````");
-          router.push("/chatlist");
+          router.push({
+            pathname: "/chatlist",
+            query: {
+              uid: currentUser.uid,
+            },
+          });
           await deleteUserInChatRoom(roomId, { ...currentUser });
         }
       }
     }
   }, [roomInfo]);
 
-  useLayoutEffect(() => {
+  const pushToScroll = useCallback(() => {
+    if (scrollRef.current) {
+      const height = scrollRef.current.offsetHeight;
+      scrollRef.current.scrollTop = height;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      pushToScroll();
+    }
     if (!roomInfo) {
       router.push("/chatlist");
     }
@@ -86,7 +111,13 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
   }
   return (
     <Div>
-      <div className="flex-1 overflow-y-auto">
+      <ChatWrap
+        ref={(ele) => {
+          if (ele) {
+            scrollRef.current = ele;
+          }
+        }}
+      >
         <Header>
           <div className="flex justify-between">
             <button onClick={() => router.push("/chatlist")}>&larr;</button>
@@ -118,9 +149,9 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
         </Header>
         {/* 채팅박스 */}
         <TimeStamp>
-          <span>timeStamp 00:00</span>
+          <span>{`생성:${roomInfo.createdAt.split(" ")[0]}`}</span>
         </TimeStamp>
-        <ChatWrap>
+        <div className="px-3">
           {roomInfo.chatList.map((chat, idx) => {
             const {
               content,
@@ -146,8 +177,8 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
               />
             );
           })}
-        </ChatWrap>
-      </div>
+        </div>
+      </ChatWrap>
       <form onSubmit={submitHandler}>
         <ChatInput
           placeholder="Put Your Message...."
@@ -184,7 +215,7 @@ flex pt-2 justify-center text-time text-[0.9em]
 `;
 
 const ChatWrap = tw.div`
-px-3
+flex-1 overflow-y-auto pb-2
 `;
 
 const ChatInput = tw.input`

@@ -4,9 +4,8 @@ import tw from "tailwind-styled-components";
 import Link from "next/link";
 import { PuffLoader } from "react-spinners";
 import { loginAccount } from "../api/auth";
-import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import { ButtonWrap, MyForm } from "./MyForm";
-import { makeErrorMsg } from "./util/error";
+import { checkError } from "./util/error";
 import { useRouter } from "next/router";
 import { ErrorMsg } from "../constants/error";
 
@@ -44,12 +43,7 @@ function Home() {
     e.preventDefault();
     const { email, password } = loginInfo;
     const result = await loginAccount(email, password);
-
-    if (typeof result === "string") {
-      makeErrorMsg(result, setErrMsg);
-      setLoading(false);
-      return;
-    }
+    checkError(result, setErrMsg, setLoading);
   };
 
   return (

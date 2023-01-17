@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
-import { ImageType } from "../api/store";
+import { changeLoginState, ImageType } from "../api/store";
 import { fbAuth } from "../api/firebase";
 
 type ContextProps = {
@@ -43,6 +43,11 @@ function AuthProvider({ children }: ContextProps) {
       } else {
         console.log("Provider -> Logout");
         setCurrentUser(null);
+        if (currentUser) {
+          changeLoginState(currentUser.email, false).then((item) =>
+            console.log("Provider -> unmout logout", item)
+          );
+        }
         router.push("/home", undefined, { shallow: true });
       }
     });

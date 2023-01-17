@@ -9,6 +9,11 @@ import {
   onSnapshot,
   getDoc,
   deleteDoc,
+  query,
+  Query,
+  where,
+  QueryConstraint,
+  CollectionReference,
 } from "firebase/firestore";
 import { Router } from "next/router";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -69,14 +74,19 @@ export const useDocData = async (collectionName: Collection, docId: string) => {
   }
 };
 export const useCollectionData = async <T>(
-  name: string
+  name: string,
+  qry?: QueryConstraint
 ): Promise<T[] | string> => {
   try {
+    let ref: Query<DocumentData> | CollectionReference<DocumentData> =
+      collection(fbDb, name);
     const resultArray: T[] = [];
-    const ref = collection(fbDb, name);
-    const querySnapShot = await getDocs(ref);
+    if (qry) {
+      ref = await query(collection(fbDb, name), qry);
+    }
 
-    querySnapShot.forEach((doc) => {
+    const snapShot = await getDocs(ref);
+    snapShot.forEach((doc) => {
       const data = doc.data() as T;
       resultArray.push({ ...data, docId: doc.id });
     });

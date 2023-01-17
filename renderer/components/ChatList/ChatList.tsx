@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import Link from "next/link";
 import tw from "tailwind-styled-components";
 import { ChatListPage } from "../../pages/chatlist";
@@ -8,6 +8,7 @@ import { Empty } from "../Empty";
 import { ProfileImages } from "./ProfileImages";
 import { timeFormat } from "../util/time";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
+import { fbAuth } from "../../api/firebase";
 
 type ChatListProps = ChatListPage;
 
@@ -18,59 +19,69 @@ function ChatList({ initChatRoomList }: ChatListProps) {
     "chatRoom",
     initChatRoomList
   );
+  console.log("````````````chatRoomList````````````", chatRoomList);
+  if (!currentUser) {
+    return <div>err</div>;
+  }
 
   return (
     <Container>
-      {chatRoomList.map((chat) => {
-        const { docId, users, chatList } = chat;
-        return (
-          <Link
-            key={`chatRoom-${docId}`}
-            href={{
-              pathname: "/chat",
-              query: {
-                id: docId,
-              },
-            }}
-          >
-            <ContentWrap>
-              <div className="flex h-20">
-                <div className="w-20 p-3.5">
-                  <ProfileImages users={users} />
-                </div>
-                <div className="flex flex-col justify-evenly">
-                  <p className="tracking-wide font-semibold text-lg">
-                    {users.slice(0, 4).map((item) => {
-                      if (item.uid === currentUser?.uid) {
+      {chatRoomList
+        .filter((room) =>
+          room.users.map((user) => user.uid).includes(currentUser.uid)
+        )
+        .map((chat) => {
+          const { docId, users, chatList } = chat;
+          return (
+            <Link
+              key={`chatRoom-${docId}`}
+              href={{
+                pathname: "/chat",
+                query: {
+                  id: docId,
+                },
+              }}
+            >
+              <ContentWrap>
+                <div className="flex h-20">
+                  <div className="w-20 p-3.5">
+                    <ProfileImages users={users} />
+                  </div>
+                  <div className="flex flex-col justify-evenly">
+                    <p className="tracking-wide font-semibold text-lg">
+                      {users.slice(0, 4).map((item, idx, arr) => {
+                        const text =
+                          idx !== arr.length - 1
+                            ? `${item.name + ","}`
+                            : `${item.name}`;
+                        if (item.uid === currentUser?.uid) {
+                          return (
+                            <span key="chatlist-name-Im">
+                              {text}
+                              <span className="text-sm text-logout">(나)</span>
+                            </span>
+                          );
+                        }
                         return (
-                          <span key="chatlist-name-Im">
-                            {item.name}
-                            <span className="text-sm text-logout">(나)</span>
-                          </span>
+                          <span key={`chatlist-name-${item.uid}`}>{text}</span>
                         );
-                      }
-                      return (
-                        <span key={`chatlist-name-${item.uid}`}>
-                          {item.name}
-                        </span>
-                      );
-                    })}
-                    <span className="pl-2 pb-6 text-xs text-gray-400">
-                      {users.length}
-                    </span>
-                  </p>
-                  <p className="tracking-wide font-semibold text-sm">
-                    {chatList.at(-1)?.content}
-                  </p>
+                      })}
+                      <span className="pl-2 pb-6 text-xs text-gray-400">
+                        {users.length}
+                      </span>
+                    </p>
+                    <p className="tracking-wide font-semibold text-sm">
+                      {chatList.at(-1)?.content}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <span className="text-time pr-5">
-                {timeFormat(chatList.at(-1)?.createdAt || "")}
-              </span>
-            </ContentWrap>
-          </Link>
-        );
-      })}
+                <span className="text-time pr-5">
+                  {timeFormat(chatList.at(-1)?.createdAt || "")}
+                </span>
+              </ContentWrap>
+            </Link>
+          );
+        })}
       <Empty />
     </Container>
   );

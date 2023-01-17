@@ -17,11 +17,13 @@ import {
   getAccountList,
   ImageType,
   inviteUserInChatRoom,
+  postChatData,
 } from "../../api/store";
 import { Spinner } from "../Spinner";
-import { makeErrorMsg } from "../util/error";
+import { checkError, makeErrorMsg } from "../util/error";
 import { CurrentUser } from "../../provider/AuthProvider";
 import { ErrorMsg } from "../../constants/error";
+import { getNow } from "../util/time";
 
 type InviteProps = {
   setIsInvite: Dispatch<SetStateAction<boolean>>;
@@ -67,7 +69,6 @@ export function Invite({
         console.log("````````````이미 존재하는 유저````````````");
         return;
       }
-
       // Todo : 각종 유저리스트 등에 "나 자신" 은 제외되게 렌더링. + Users컴포넌트 온라인 / 오프라인 상태에 따라 유저 나누기
       // Todo : 초대시 초대했습니다 메시지 어떻게 데이터 넣을건지
       // Todo : 채팅 맨위에 타임스탬프 어떻게할건지.  -> 카톡은 일자별로 쪼개져서 나옴
@@ -80,26 +81,36 @@ export function Invite({
         name,
         image,
       });
+      const e1 = checkError(result, setErrMsg, setIsInvite);
+      if (e1) return;
 
-      if (typeof result === "string") {
-        makeErrorMsg(result, setErrMsg);
-        setIsInvite(false);
-        return;
-      }
+      const sysChat = {
+        content: `${currentUser?.name || "?"}님이 ${name}님을 초대했습니다.`,
+        sendInfo: {
+          email: "",
+          name: "",
+          uid: "",
+          image: null,
+        },
+        createdAt: getNow(),
+        isSystem: true,
+      };
+      const sysChatResult = await postChatData(roomId, sysChat);
+      const e2 = checkError(sysChatResult, setErrMsg, setIsInvite);
+      if (e2) return;
+
       console.log("````````````초대완료````````````");
       setIsInvite(false);
     },
-    [roomId, roomInfo]
+    [roomId, roomInfo, currentUser]
   );
 
   useEffect(() => {
     async function fetchAndSet() {
-      const result = await getAccountList();
-      if (typeof result === "string") {
-        makeErrorMsg(result, setErrMsg);
-        setLoading(false);
-        return;
-      }
+      const result = (await getAccountList()) as Account[];
+      const e = checkError(result, setErrMsg, setIsInvite);
+      if (e) return;
+
       setInitialAccounts(result);
       setAccounts(result);
       setLoading(false);

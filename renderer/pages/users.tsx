@@ -1,3 +1,4 @@
+import { where } from "firebase/firestore";
 import { GetServerSideProps } from "next";
 import React from "react";
 import {
@@ -26,10 +27,9 @@ export default function users({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const initAccountList = await getAccountList();
+export const getServerSideProps: GetServerSideProps = async (req) => {
   const initChatRoomList = await getChatroomList();
-
+  const initAccountList = await getAccountList();
   return {
     props: {
       initAccountList,

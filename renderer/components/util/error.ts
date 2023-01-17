@@ -43,3 +43,16 @@ export const makeErrorMsg = (
       setter(MSG_DEFAULT);
   }
 };
+
+export const checkError = <T>(
+  result: T,
+  errSetter: Dispatch<SetStateAction<ErrorMsg>>,
+  loadingSetter: Dispatch<SetStateAction<boolean>>
+) => {
+  if (typeof result === "string") {
+    makeErrorMsg(result, errSetter);
+    loadingSetter(false);
+    return true;
+  }
+  return false;
+};

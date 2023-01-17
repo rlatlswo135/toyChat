@@ -11,9 +11,19 @@ function chatList({ initChatRoomList }: ChatListPage) {
   return <ChatList initChatRoomList={initChatRoomList} />;
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (req) => {
+  console.log(req.query);
   const initChatRoomList = await getChatroomList();
   const initAccountList = await getAccountList();
+
+  if (typeof initChatRoomList === "string") {
+    return {
+      props: {
+        initAccountList,
+        initChatRoomList: [],
+      },
+    };
+  }
   return {
     props: {
       initChatRoomList,

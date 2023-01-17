@@ -36,7 +36,7 @@ export const updateAccount = async (
     if (currentUser) {
       const update = await updateProfile(currentUser, {
         displayName: name,
-        photoURL,
+        photoURL: photoURL || "",
       });
       console.log("update", update);
       return update;

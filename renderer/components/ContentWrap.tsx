@@ -34,10 +34,10 @@ const Title = tw.h1`
 pt-24 py-12 text-center text-8xl font-bold
 `;
 const Wrap = tw.div`
-flex flex-1 overflow-x-hidden rounded-xl
+flex flex-1 overflow-x-hidden overflow-y-hidden rounded-xl
 `;
 const ComponentWrap = tw.div`
-flex flex-col bg-gray-400/25 max-w-full max-h-full w-full overflow-y-auto
+flex flex-col bg-gray-400/25 max-w-full max-h-full w-full
 `;
 const Content = tw.div`
 flex flex-col w-full mb-2 h-full

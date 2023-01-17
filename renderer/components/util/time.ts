@@ -50,7 +50,8 @@ export const toTime = (time: string) => {
 export const toDate = (time: string) => format(new Date(time), "MM-dd");
 export const toYear = (time: string) => format(new Date(time), "yyyy-MM-dd");
 
-export const getNow = () => format(new Date(), "yyyy-MM-dd kk:mm:ss");
+export const getNow = () => format(new Date(), "yyyy-MM-dd KK:mm:ss");
+export const getNowDate = () => format(new Date(), "yyyy-MM-dd");
 export const toJson = <T>(item: T): string => JSON.stringify(item);
 
 export const timeFormat = (time: string) => {

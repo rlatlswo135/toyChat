@@ -3,8 +3,10 @@ import React from "react";
 import tw from "tailwind-styled-components";
 import { FaUser } from "react-icons/fa";
 import { BsFillChatFill } from "react-icons/bs";
+import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 
 function Nav() {
+  const { currentUser } = useAuthContext() as AuthContext;
   return (
     <Container>
       <ul className="flex flex-col items-center justify-start flex-1">
@@ -13,7 +15,14 @@ function Nav() {
             <FaUser size={20} />
           </Menu>
         </Link>
-        <Link href="/chatlist">
+        <Link
+          href={{
+            pathname: "/chatlist",
+            query: {
+              uid: currentUser?.uid || "",
+            },
+          }}
+        >
           <Menu>
             <BsFillChatFill size={20} />
           </Menu>

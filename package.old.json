@@ -8,10 +8,7 @@
   "scripts": {
     "dev": "nextron",
     "build": "nextron build",
-    "postinstall": "electron-builder install-app-deps",
-    "rebuild": "./node_modules/.bin/electron-rebuild",
-    "deploy": "node ./config/firebase-deploy.js",
-    "start": "electron ./main.js"
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@firebase/auth-types": "^0.12.0",
