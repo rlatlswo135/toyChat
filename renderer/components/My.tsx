@@ -50,15 +50,6 @@ export function My({ docId, accountList }: MyProps) {
     { image, name }
   );
 
-  console.log("````````````image,name````````````", image, name);
-  console.log(
-    "````````````cimage, cname````````````",
-    current[0].image,
-    current[0].name
-  );
-
-  useEffect(() => {}, [current[0]]);
-
   // ** event handler
   const onClickDelete = useCallback(() => setIsDelete(true), []);
   const onClickEditImage = useCallback(() => {
