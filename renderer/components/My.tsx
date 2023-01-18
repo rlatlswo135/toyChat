@@ -57,6 +57,8 @@ export function My() {
   useLayoutEffect(() => {
     if (currentUser && accountList.length) {
       const filter = filterCurrent(currentUser.uid, accountList);
+      console.log("filter", filter);
+      console.log("set", filter[0].docId, filter[0].name, filter[0].image);
       setDocId(filter[0].docId);
       setName(filter[0].name);
       setImage(filter[0].image);
@@ -90,7 +92,6 @@ export function My() {
   const confirmDelete = useCallback(async () => {
     if (currentUser) {
       setLoading(true);
-
       if (docId) {
         const result = await deleteAccount(docId);
         const e = checkErrorAndSet(result, setErrMsg, setLoading);
@@ -99,7 +100,7 @@ export function My() {
       setLoading(false);
       setIsDelete(false);
     }
-  }, [currentUser]);
+  }, [currentUser, docId]);
 
   const confirmEdit = async () => {
     setLoading(true);

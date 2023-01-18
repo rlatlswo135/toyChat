@@ -106,5 +106,5 @@ export default React.memo(Register);
 
 const ImageWrap = tw.div`
 hidden relative w-24 h-24 p-5 rounded-full overflow-hidden
-md:block md:w-40 md:h-40 xl:w-60 xl:h-60
+md:block md:w-40 md:h-40 xl:block w-60
 `;

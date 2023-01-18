@@ -79,7 +79,7 @@ export default (
       ...options.webPreferences,
     },
     minWidth: 550,
-    minHeight: 690,
+    minHeight: 755,
   };
   win = new BrowserWindow(browserOptions);
 
