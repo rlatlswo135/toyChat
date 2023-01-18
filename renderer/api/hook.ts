@@ -51,6 +51,11 @@ export const useDocState = <T>(
   init: T
 ): [T, Dispatch<SetStateAction<T>>] => {
   const [docData, setDocData] = useState<T>(init);
+
+  if (!docId) {
+    return [docData, setDocData];
+  }
+
   const ref = doc(fbDb, colName, docId);
 
   useEffect(() => {

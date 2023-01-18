@@ -14,36 +14,38 @@ export type ChatPage = {
   initAccountList: Account[];
 };
 
-function chat({ initRoomInfo, roomId, initAccountList }: ChatPage) {
-  return (
-    <Chat
-      initRoomInfo={initRoomInfo}
-      roomId={roomId}
-      initAccountList={initAccountList}
-    />
-  );
+// { initRoomInfo, roomId, initAccountList }: ChatPage
+function chat() {
+  // return (
+  //   <Chat
+  //     initRoomInfo={initRoomInfo}
+  //     roomId={roomId}
+  //     initAccountList={initAccountList}
+  //   />
+  // );
+  return <Chat />;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const roomId = query.id;
-  if (typeof roomId === "string") {
-    const initRoomInfo = (await getChatRoomInfo(roomId)) as ChatRoom;
-    const initAccountList = await getAccountList();
+// export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+//   const roomId = query.id;
+//   if (typeof roomId === "string") {
+//     const initRoomInfo = (await getChatRoomInfo(roomId)) as ChatRoom;
+//     const initAccountList = await getAccountList();
 
-    return {
-      props: {
-        roomId,
-        initRoomInfo,
-        initAccountList,
-      },
-    };
-  }
+//     return {
+//       props: {
+//         roomId,
+//         initRoomInfo,
+//         initAccountList,
+//       },
+//     };
+//   }
 
-  return {
-    props: {
-      roomInfo: null,
-    },
-  };
-};
+//   return {
+//     props: {
+//       roomInfo: null,
+//     },
+//   };
+// };
 
 export default chat;

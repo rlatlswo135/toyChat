@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -22,24 +23,35 @@ import { MyChat, OtherChat } from "./_Chat";
 import { getNow, getNowDate, timeFormat, toYear } from "../util/time";
 import { useRouter } from "next/router";
 import { useCollectionState, useDocState } from "../../api/hook";
-import { ChatPage } from "../../pages/chat";
+// import { ChatPage } from "../../pages/chat";
 import { Spinner } from "../Spinner";
 import { Invite } from "./Invite";
 import { filterCurrent } from "../util/auth";
+import { ChatMenus } from "./ChatMenus";
 
 // Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
-type ChatProps = ChatPage;
+// type ChatProps = ChatPage;
 // 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
-function Chat({ initAccountList, initRoomInfo, roomId }: ChatProps) {
+// { initAccountList, initRoomInfo, roomId }: ChatProps
+function Chat() {
   const router = useRouter();
-  const scrollRef = useRef<HTMLDivElement | null>(null);
   const { currentUser } = useAuthContext() as AuthContext;
-  const [roomInfo] = useDocState<ChatRoom>("chatRoom", roomId, initRoomInfo);
-  const [accountList] = useCollectionState<Account>(
-    "accounts",
-    initAccountList
-  );
+
+  const roomId = router.query.id as string;
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLUListElement | null>(null);
+
+  const [roomInfo] = useDocState<ChatRoom>("chatRoom", roomId, {
+    docId: roomId,
+    chatList: [],
+    users: [],
+    createdAt: "",
+  });
+
+  const [accountList] = useCollectionState<Account>("accounts", []);
+
   const [chatContent, setChatContent] = useState<string>("");
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isInvite, setIsInvite] = useState<boolean>(false);
@@ -103,6 +115,18 @@ function Chat({ initAccountList, initRoomInfo, roomId }: ChatProps) {
     }
   }, []);
 
+  const menus = useMemo(
+    () => [
+      {
+        icon: <FcInvite className="w-5 h-5" />,
+        text: "Invite User",
+        click: inviteUser,
+      },
+      { icon: <ImExit className="w-5 h-5" />, text: "Exit", click: exitChat },
+    ],
+    []
+  );
+
   useEffect(() => {
     if (scrollRef.current) {
       pushToScroll();
@@ -131,27 +155,21 @@ function Chat({ initAccountList, initRoomInfo, roomId }: ChatProps) {
               .map((user) => user.name)
               .join(",")}`}</span>
             <div>
-              <button title="menu" onClick={toggleMenuHandler}>
+              <button
+                title="menu"
+                name="menuBtn"
+                onClick={toggleMenuHandler}
+                className="w-6 h-6"
+              >
                 {isMenuOpen ? (
-                  <RiCloseLine className="w-5 h-5" />
+                  <RiCloseLine size="100%" />
                 ) : (
-                  <GiHamburgerMenu className="w-5 h-5" />
+                  <GiHamburgerMenu size="100%" />
                 )}
               </button>
             </div>
           </div>
-          {isMenuOpen && (
-            <Menus>
-              <Menu onClick={inviteUser}>
-                <FcInvite className="w-5 h-5" />
-                <span className="ml-3">Invite User</span>
-              </Menu>
-              <Menu onClick={exitChat}>
-                <ImExit className="w-5 h-5" />
-                <span className="ml-3">Exit</span>
-              </Menu>
-            </Menus>
-          )}
+          {isMenuOpen && <ChatMenus menus={menus} setter={setIsMenuOpen} />}
         </Header>
         {/* 채팅박스 */}
         <TimeStamp>

@@ -3,6 +3,7 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
+  useRef,
   useState,
   useTransition,
 } from "react";
@@ -38,6 +39,8 @@ export function Invite({
   roomId,
   currentUser,
 }: InviteProps) {
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
   const [initialAccounts, setInitialAccounts] = useState<Account[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -106,6 +109,23 @@ export function Invite({
   );
 
   useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const node = e.target instanceof Element && e.target;
+      const ref = modalRef.current;
+      console.log(ref?.contains(node as Element));
+      if (node && !ref?.contains(node)) {
+        setIsInvite(false);
+      }
+    };
+    setTimeout(() => {
+      document.addEventListener("click", handler);
+    }, 1000);
+    return () => {
+      document.removeEventListener("click", handler);
+    };
+  }, []);
+
+  useEffect(() => {
     async function fetchAndSet() {
       const result = (await getAccountList()) as Account[];
       const e = checkErrorAndSet(result, setErrMsg, setIsInvite);
@@ -125,7 +145,13 @@ export function Invite({
   }
 
   return (
-    <Container>
+    <Container
+      ref={(ele) => {
+        if (ele) {
+          modalRef.current = ele;
+        }
+      }}
+    >
       <SubContainer>
         <form className="relative w-full mb-4">
           <SearchInput

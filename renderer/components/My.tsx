@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -15,32 +16,35 @@ import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import { checkErrorAndSet } from "./util/error";
 import { deleteAccount } from "../api/auth";
 import { Spinner } from "./Spinner";
-import { MyPage } from "../pages/my";
+// import { MyPage } from "../pages/my";
 import { LIMIT } from "../constants/image";
 import { EditAndSave } from "./EditAndSave";
-import { changeAccountInfo, ImageType } from "../api/store";
+import { Account, changeAccountInfo, ImageType } from "../api/store";
 import { ErrorMsg } from "../constants/error";
 import { filterCurrent } from "./util/auth";
+import { useCollectionState } from "../api/hook";
 
-type MyProps = MyPage;
-export function My({ docId, accountList }: MyProps) {
+// type MyProps = MyPage;
+// { docId, accountList }: MyProps
+export function My() {
   const router = useRouter();
-
   const nameRef = useRef<HTMLInputElement | null>(null);
   const imageRef = useRef<HTMLInputElement | null>(null);
   const { currentUser } = useAuthContext() as AuthContext;
+  const [docId, setDocId] = useState<string>("");
+  const [accountList] = useCollectionState<Account>("accounts", []);
 
   // * F/B Auth업데이트가 DB보다 훨씬느려서 실시간에 맞추기위해 DB데이터 쓰자
   const current = useMemo(
     () => filterCurrent(currentUser?.uid, accountList),
-    [currentUser]
+    [currentUser, accountList]
   );
 
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
 
-  const [name, setName] = useState<string>(current[0]?.name || "");
-  const [image, setImage] = useState<ImageType>(current[0]?.image);
+  const [name, setName] = useState<string>(currentUser?.name || "");
+  const [image, setImage] = useState<ImageType>(currentUser?.image || null);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [errMsg, setErrMsg] = useState<ErrorMsg>(null);
@@ -49,6 +53,15 @@ export function My({ docId, accountList }: MyProps) {
     { image: current[0]?.image, name: current[0]?.name },
     { image, name }
   );
+
+  useLayoutEffect(() => {
+    if (currentUser && accountList.length) {
+      const filter = filterCurrent(currentUser.uid, accountList);
+      setDocId(filter[0].docId);
+      setName(filter[0].name);
+      setImage(filter[0].image);
+    }
+  }, [currentUser, accountList]);
 
   // ** event handler
   const onClickDelete = useCallback(() => setIsDelete(true), []);
@@ -98,8 +111,10 @@ export function My({ docId, accountList }: MyProps) {
 
     try {
       console.log("start upload");
-
       // * base64는 길다하고 url blob쓰자니 셋될때마다 URL.선언해줘야하는데 흠,,
+      console.log("````````````name````````````", name);
+      console.log("````````````image````````````", image);
+      console.log("````````````docId````````````", docId);
       const result = await changeAccountInfo(docId, currentUser.uid, {
         image,
         name,

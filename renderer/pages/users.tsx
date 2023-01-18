@@ -16,26 +16,30 @@ export type UsersPage = {
 };
 
 // Todo 온라인 / 오프라인 나눠서 렌더 -> sort말고 filter로
-export default function users({
+/*
+{
   initAccountList,
   initChatRoomList,
-}: UsersPage) {
-  return (
-    <Users
-      initAccountList={initAccountList}
-      initChatRoomList={initChatRoomList}
-    />
-  );
+}: UsersPage 
+*/
+export default function users() {
+  // return (
+  //   <Users
+  //     initAccountList={initAccountList}
+  //     initChatRoomList={initChatRoomList}
+  //   />
+  // );
+  return <Users />;
 }
 
-export const getServerSideProps: GetServerSideProps = async (req) => {
-  let initChatRoomList = await getChatroomList();
-  let initAccountList = await getAccountList();
+// export const getServerSideProps: GetServerSideProps = async (req) => {
+//   let initChatRoomList = await getChatroomList();
+//   let initAccountList = await getAccountList();
 
-  return {
-    props: {
-      initAccountList,
-      initChatRoomList,
-    },
-  };
-};
+//   return {
+//     props: {
+//       initAccountList,
+//       initChatRoomList,
+//     },
+//   };
+// };

@@ -5,6 +5,7 @@ export const filterCurrent = (
   accountList: Account[]
 ) => {
   if (uid) {
+    console.log("````````````accountList````````````", accountList);
     return accountList.filter((user) => user.uid === uid);
   }
   return [];
