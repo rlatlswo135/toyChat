@@ -20,7 +20,7 @@ import {
   postChatData,
 } from "../../api/store";
 import { Spinner } from "../Spinner";
-import { checkError, makeErrorMsg } from "../util/error";
+import { checkErrorAndSet, makeErrorMsg } from "../util/error";
 import { CurrentUser } from "../../provider/AuthProvider";
 import { ErrorMsg } from "../../constants/error";
 import { getNow } from "../util/time";
@@ -81,7 +81,7 @@ export function Invite({
         name,
         image,
       });
-      const e1 = checkError(result, setErrMsg, setIsInvite);
+      const e1 = checkErrorAndSet(result, setErrMsg, setIsInvite);
       if (e1) return;
 
       const sysChat = {
@@ -96,7 +96,7 @@ export function Invite({
         isSystem: true,
       };
       const sysChatResult = await postChatData(roomId, sysChat);
-      const e2 = checkError(sysChatResult, setErrMsg, setIsInvite);
+      const e2 = checkErrorAndSet(sysChatResult, setErrMsg, setIsInvite);
       if (e2) return;
 
       console.log("````````````초대완료````````````");
@@ -108,7 +108,7 @@ export function Invite({
   useEffect(() => {
     async function fetchAndSet() {
       const result = (await getAccountList()) as Account[];
-      const e = checkError(result, setErrMsg, setIsInvite);
+      const e = checkErrorAndSet(result, setErrMsg, setIsInvite);
       if (e) return;
 
       setInitialAccounts(result);

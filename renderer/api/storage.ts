@@ -17,3 +17,16 @@ export const uploadFile = async (file: string) => {
     return err.code;
   }
 };
+
+export const testUpload = async (file: File) => {
+  try {
+    const storageRef = ref(fbStorage, `profile/test`);
+    console.log("uploadfile -> 전");
+    const result = await uploadBytes(storageRef, file);
+    console.log("uploadfile -> 후");
+    console.log("````````````result````````````", result);
+    return;
+  } catch (err) {
+    console.error(err);
+  }
+};

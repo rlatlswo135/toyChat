@@ -5,7 +5,7 @@ import Link from "next/link";
 import { PuffLoader } from "react-spinners";
 import { loginAccount } from "../api/auth";
 import { ButtonWrap, MyForm } from "./MyForm";
-import { checkError } from "./util/error";
+import { checkErrorAndSet } from "./util/error";
 import { useRouter } from "next/router";
 import { ErrorMsg } from "../constants/error";
 
@@ -43,7 +43,7 @@ function Home() {
     e.preventDefault();
     const { email, password } = loginInfo;
     const result = await loginAccount(email, password);
-    checkError(result, setErrMsg, setLoading);
+    checkErrorAndSet(result, setErrMsg, setLoading);
   };
 
   return (

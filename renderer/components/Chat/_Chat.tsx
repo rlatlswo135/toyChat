@@ -18,8 +18,9 @@ export function MyChat({ content, time }: MyChatProps) {
 
 interface OtherChatProps extends MyChatProps {
   img: string | null;
+  name: string;
 }
-export function OtherChat({ content, time, img }: OtherChatProps) {
+export function OtherChat({ content, time, img, name }: OtherChatProps) {
   return (
     <div className="flex justify-start pt-2 items-end">
       <div className="pb-4">
@@ -31,7 +32,7 @@ export function OtherChat({ content, time, img }: OtherChatProps) {
         />
       </div>
       <div className="flex flex-col ml-3">
-        <p className="text-[0.9em] font-bold mb-2 tracking-wide">KIM</p>
+        <p className="text-[0.9em] font-bold mb-2 tracking-wide">{name}</p>
         <span className="bg-gray-500 rounded-lg px-3 py-1.5">{content}</span>
       </div>
       <span className="text-sm text-gray-300 ml-2">{time}</span>

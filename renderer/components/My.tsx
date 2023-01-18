@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/router";
 import { AiFillCloseCircle } from "react-icons/ai";
 import tw from "tailwind-styled-components";
@@ -6,7 +12,7 @@ import Image from "next/image";
 import { isEqual } from "lodash";
 import profile from "../public/images/default.png";
 import { AuthContext, useAuthContext } from "../provider/AuthProvider";
-import { checkError } from "./util/error";
+import { checkErrorAndSet } from "./util/error";
 import { deleteAccount } from "../api/auth";
 import { Spinner } from "./Spinner";
 import { MyPage } from "../pages/my";
@@ -14,29 +20,44 @@ import { LIMIT } from "../constants/image";
 import { EditAndSave } from "./EditAndSave";
 import { changeAccountInfo, ImageType } from "../api/store";
 import { ErrorMsg } from "../constants/error";
+import { filterCurrent } from "./util/auth";
 
 type MyProps = MyPage;
-export function My({ docId }: MyProps) {
+export function My({ docId, accountList }: MyProps) {
   const router = useRouter();
+
   const nameRef = useRef<HTMLInputElement | null>(null);
   const imageRef = useRef<HTMLInputElement | null>(null);
   const { currentUser } = useAuthContext() as AuthContext;
 
+  // * F/B Auth업데이트가 DB보다 훨씬느려서 실시간에 맞추기위해 DB데이터 쓰자
+  const current = useMemo(
+    () => filterCurrent(currentUser?.uid, accountList),
+    [currentUser]
+  );
+
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
 
-  const [name, setName] = useState<string>(currentUser?.name || "");
-  const [image, setImage] = useState<ImageType>(currentUser?.image || null);
+  const [name, setName] = useState<string>(current[0]?.name || "");
+  const [image, setImage] = useState<ImageType>(current[0]?.image);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [errMsg, setErrMsg] = useState<ErrorMsg>(null);
 
   const isEdit = !isEqual(
-    { image: currentUser?.image, name: currentUser?.name },
+    { image: current[0]?.image, name: current[0]?.name },
     { image, name }
   );
 
-  useEffect(() => {}, [currentUser]);
+  console.log("````````````image,name````````````", image, name);
+  console.log(
+    "````````````cimage, cname````````````",
+    current[0].image,
+    current[0].name
+  );
+
+  useEffect(() => {}, [current[0]]);
 
   // ** event handler
   const onClickDelete = useCallback(() => setIsDelete(true), []);
@@ -56,10 +77,10 @@ export function My({ docId }: MyProps) {
   const cancelDelete = useCallback(() => setIsDelete(false), []);
 
   const cancelEdit = useCallback(() => {
-    console.log("````````````initial````````````", currentUser?.image || null);
-    setImage(currentUser?.image || null);
-    setName(currentUser?.name || "");
-  }, [currentUser, image]);
+    console.log("````````````initial````````````", current[0]?.image || null);
+    setImage(current[0]?.image || null);
+    setName(current[0]?.name || "");
+  }, [current[0], image]);
 
   // ** confirm
   const confirmDelete = useCallback(async () => {
@@ -68,7 +89,7 @@ export function My({ docId }: MyProps) {
 
       if (docId) {
         const result = await deleteAccount(docId);
-        const e = checkError(result, setErrMsg, setLoading);
+        const e = checkErrorAndSet(result, setErrMsg, setLoading);
         if (e) return;
       }
       setLoading(false);
@@ -92,7 +113,7 @@ export function My({ docId }: MyProps) {
         image,
         name,
       });
-      const e = checkError(result, setErrMsg, setLoading);
+      const e = checkErrorAndSet(result, setErrMsg, setLoading);
       if (e) return;
 
       router.push("/users");
@@ -134,13 +155,14 @@ export function My({ docId }: MyProps) {
       <Container>
         <Wrap>
           <div className="relative">
-            <ImageWrap className="group/edit" onClick={onClickEditImage}>
+            {/* <ImageWrap className="group/edit" onClick={onClickEditImage}> */}
+            <ImageWrap className="group/edit">
               <Image
                 src={image || profile}
                 layout="fill"
                 className="border-2"
               />
-              <EditImage>Edit</EditImage>
+              {/* <EditImage>Edit</EditImage> */}
             </ImageWrap>
             {image && (
               <button
@@ -172,7 +194,7 @@ export function My({ docId }: MyProps) {
               </Edit>
             )}
           </div>
-          <Email>{currentUser?.email}</Email>
+          <Email>{current[0]?.email}</Email>
           {!loading && <Delete onClick={onClickDelete}>Delete</Delete>}
           {isEdit && (
             <EditAndSave

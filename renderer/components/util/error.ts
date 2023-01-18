@@ -44,7 +44,7 @@ export const makeErrorMsg = (
   }
 };
 
-export const checkError = <T>(
+export const checkErrorAndSet = <T>(
   result: T,
   errSetter: Dispatch<SetStateAction<ErrorMsg>>,
   loadingSetter: Dispatch<SetStateAction<boolean>>
@@ -52,6 +52,13 @@ export const checkError = <T>(
   if (typeof result === "string") {
     makeErrorMsg(result, errSetter);
     loadingSetter(false);
+    return true;
+  }
+  return false;
+};
+
+export const checkError = <T>(result: T) => {
+  if (typeof result === "string") {
     return true;
   }
   return false;

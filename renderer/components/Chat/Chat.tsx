@@ -11,6 +11,7 @@ import { FcInvite } from "react-icons/fc";
 import { RiCloseLine } from "react-icons/ri";
 import tw from "tailwind-styled-components";
 import {
+  Account,
   ChatRoom,
   deleteChatRoom,
   deleteUserInChatRoom,
@@ -20,20 +21,25 @@ import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
 import { getNow, getNowDate, timeFormat, toYear } from "../util/time";
 import { useRouter } from "next/router";
-import { useDocState } from "../../api/hook";
+import { useCollectionState, useDocState } from "../../api/hook";
 import { ChatPage } from "../../pages/chat";
 import { Spinner } from "../Spinner";
 import { Invite } from "./Invite";
+import { filterCurrent } from "../util/auth";
 
 // Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
 
 type ChatProps = ChatPage;
 // 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
-function Chat({ initRoomInfo, roomId }: ChatProps) {
+function Chat({ initAccountList, initRoomInfo, roomId }: ChatProps) {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const { currentUser } = useAuthContext() as AuthContext;
   const [roomInfo] = useDocState<ChatRoom>("chatRoom", roomId, initRoomInfo);
+  const [accountList] = useCollectionState<Account>(
+    "accounts",
+    initAccountList
+  );
   const [chatContent, setChatContent] = useState<string>("");
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isInvite, setIsInvite] = useState<boolean>(false);
@@ -172,6 +178,7 @@ function Chat({ initRoomInfo, roomId }: ChatProps) {
               <OtherChat
                 key={`otherChat-${idx}`}
                 time={timeFormat(createdAt)}
+                name={filterCurrent(uid, accountList)[0].name || "DEFAULT"}
                 content={content}
                 img={image}
               />

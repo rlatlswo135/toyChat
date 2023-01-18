@@ -8,6 +8,7 @@ import {
   getChatroomList,
 } from "../api/store";
 import { Users } from "../components/Users/Users";
+import { checkError, checkErrorAndSet } from "../components/util/error";
 
 export type UsersPage = {
   initAccountList: Account[];
@@ -28,8 +29,9 @@ export default function users({
 }
 
 export const getServerSideProps: GetServerSideProps = async (req) => {
-  const initChatRoomList = await getChatroomList();
-  const initAccountList = await getAccountList();
+  let initChatRoomList = await getChatroomList();
+  let initAccountList = await getAccountList();
+
   return {
     props: {
       initAccountList,

@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import profile from "../../public/images/default.png";
 import tw from "tailwind-styled-components";
 import { isEqual } from "lodash";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useCollectionState } from "../../api/hook";
 import {
   Account,
@@ -16,6 +16,7 @@ import { Empty } from "../Empty";
 import { getNow } from "../util/time";
 import { UsersPage } from "../../pages/users";
 import Profile from "./Profile";
+import { filterCurrent } from "../util/auth";
 
 type UsersProps = UsersPage;
 export function Users({ initAccountList, initChatRoomList }: UsersProps) {
@@ -91,6 +92,12 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
     });
   }, []);
 
+  // * F/B Auth업데이트가 DB보다 훨씬느려서 실시간에 맞추기위해 DB데이터 쓰자
+  const current = useMemo(
+    () => filterCurrent(currentUser?.uid, accountList),
+    [currentUser]
+  );
+
   if (!currentUser) {
     return <div>Loaidng</div>;
   }
@@ -101,15 +108,15 @@ export function Users({ initAccountList, initChatRoomList }: UsersProps) {
         key={`user-Im`}
         onClick={() =>
           onClickUserHandler(
-            currentUser.uid,
-            currentUser.email,
-            currentUser.name,
-            currentUser.image
+            current[0].uid,
+            current[0].email,
+            current[0].name,
+            current[0].image
           )
         }
-        src={profile}
-        name={currentUser.name}
-        email={currentUser.email}
+        src={current[0].image || profile}
+        name={current[0].name}
+        email={current[0].email}
         isLogin
         imgWrapSize={16}
         height={18}

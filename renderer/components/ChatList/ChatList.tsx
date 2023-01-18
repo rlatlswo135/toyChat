@@ -57,8 +57,8 @@ function ChatList({ initChatRoomList }: ChatListProps) {
                         if (item.uid === currentUser?.uid) {
                           return (
                             <span key="chatlist-name-Im">
-                              {text}
                               <span className="text-sm text-logout">(나)</span>
+                              {text}
                             </span>
                           );
                         }

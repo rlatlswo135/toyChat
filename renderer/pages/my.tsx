@@ -1,13 +1,14 @@
 import React from "react";
 import { GetServerSideProps } from "next";
 import { My } from "../components/My";
-import { getAccountList } from "../api/store";
+import { Account, getAccountList } from "../api/store";
 
 export type MyPage = {
   docId: string | null;
+  accountList: Account[];
 };
-export default function my({ docId }: MyPage) {
-  return <My docId={docId} />;
+export default function my({ docId, accountList }: MyPage) {
+  return <My docId={docId} accountList={accountList} />;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
@@ -26,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {
     props: {
       docId,
+      accountList,
     },
   };
 };
