@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -20,20 +19,14 @@ import {
 import { postChatData } from "../../api/store";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { MyChat, OtherChat } from "./_Chat";
-import { getNow, getNowDate, timeFormat, toYear } from "../util/time";
+import { getNow, timeFormat } from "../util/time";
 import { useRouter } from "next/router";
 import { useCollectionState, useDocState } from "../../api/hook";
-// import { ChatPage } from "../../pages/chat";
 import { Spinner } from "../Spinner";
 import { Invite } from "./Invite";
 import { filterCurrent } from "../util/auth";
 import { ChatMenus } from "./ChatMenus";
 
-// Todo 그룹채팅 + 마이페이지 이미지수정 + 채팅빠를시 UI업데이트할것들 있나 + 오류메세지UI + 그룹초대 + timeStamp넣기
-
-// type ChatProps = ChatPage;
-// 페이지이동이아닌 컴포넌트 View체인지니까 client에서 요청이 나을려나?
-// { initAccountList, initRoomInfo, roomId }: ChatProps
 function Chat() {
   const router = useRouter();
   const { currentUser } = useAuthContext() as AuthContext;
@@ -41,7 +34,6 @@ function Chat() {
   const roomId = router.query.id as string;
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const menuRef = useRef<HTMLUListElement | null>(null);
 
   const [roomInfo] = useDocState<ChatRoom>("chatRoom", roomId, {
     docId: roomId,
@@ -250,10 +242,6 @@ placeholder:text-white/30
 
 const SendBtn = tw.button`
 text-m w-[10%] font-bold bg-gray-500 h-full rounded-xl
-`;
-
-const Menus = tw.ul`
-absolute border-2 flex flex-col left-3/4 max-w-52 w-52 border-gray-400/20 bg-gray-400/80
 `;
 
 const Menu = tw.li`

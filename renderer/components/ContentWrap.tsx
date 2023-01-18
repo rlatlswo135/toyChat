@@ -1,7 +1,5 @@
-import React, { ReactNode, useEffect } from "react";
-import { useRouter } from "next/router";
+import React, { ReactNode } from "react";
 import tw from "tailwind-styled-components";
-import { AuthContext, useAuthContext } from "../provider/AuthProvider";
 import Nav from "./Nav";
 
 type ContentWrapProps = {

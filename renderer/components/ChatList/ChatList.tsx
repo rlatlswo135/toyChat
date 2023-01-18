@@ -1,25 +1,17 @@
 import React from "react";
 import Link from "next/link";
 import tw from "tailwind-styled-components";
-// import { ChatListPage } from "../../pages/chatlist";
 import { useCollectionState } from "../../api/hook";
 import { ChatRoom } from "../../api/store";
 import { Empty } from "../Empty";
 import { ProfileImages } from "./ProfileImages";
 import { timeFormat } from "../util/time";
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
-import { fbAuth } from "../../api/firebase";
 
-// type ChatListProps = ChatListPage;
-
-// { initChatRoomList }: ChatListProps
 // Todo 선택된 채팅있으면 LocalState하나 만들어서 있을시 Chat컴포넌트로 렌더하게
 function ChatList() {
   const { currentUser } = useAuthContext() as AuthContext;
-  const [chatRoomList, setChatRoomList] = useCollectionState<ChatRoom>(
-    "chatRoom",
-    []
-  );
+  const [chatRoomList] = useCollectionState<ChatRoom>("chatRoom", []);
   if (!currentUser) {
     return <div>err</div>;
   }

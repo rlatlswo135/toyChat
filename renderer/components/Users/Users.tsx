@@ -2,13 +2,11 @@ import { useRouter } from "next/router";
 import profile from "../../public/images/default.png";
 import tw from "tailwind-styled-components";
 import { isEqual } from "lodash";
-import React, { useCallback, useEffect, useLayoutEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useCollectionState } from "../../api/hook";
 import {
   Account,
   ChatRoom,
-  getAccountList,
-  getChatroomList,
   ImageType,
   postChatRoom,
   User,
@@ -16,13 +14,9 @@ import {
 import { AuthContext, useAuthContext } from "../../provider/AuthProvider";
 import { Empty } from "../Empty";
 import { getNow } from "../util/time";
-import { UsersPage } from "../../pages/users";
 import Profile from "./Profile";
 import { filterCurrent } from "../util/auth";
-import { checkError } from "../util/error";
 
-// type UsersProps = UsersPage;
-// { initAccountList, initChatRoomList }: UsersProps
 export function Users() {
   const router = useRouter();
   const { currentUser } = useAuthContext() as AuthContext;
@@ -34,16 +28,6 @@ export function Users() {
     () => filterCurrent(currentUser?.uid, accountList),
     [currentUser, accountList]
   );
-
-  // useLayoutEffect(() => {
-  //   async function fetchAndSet() {
-  //     const accountList = await getAccountList();
-  //     const chatRoomList = await getChatroomList();
-
-  //     if (!checkError(accountList) && !checkError(chatRoomList)) {
-  //     }
-  //   }
-  // }, []);
 
   const onClickUserHandler = useCallback(
     (uid: string, email: string, name: string, image: ImageType) => {

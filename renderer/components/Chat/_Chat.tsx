@@ -1,5 +1,4 @@
 import React from "react";
-import tw from "tailwind-styled-components";
 import Image from "next/image";
 import profile from "../../public/images/default.png";
 

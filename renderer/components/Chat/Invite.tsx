@@ -21,7 +21,7 @@ import {
   postChatData,
 } from "../../api/store";
 import { Spinner } from "../Spinner";
-import { checkErrorAndSet, makeErrorMsg } from "../util/error";
+import { checkErrorAndSet } from "../util/error";
 import { CurrentUser } from "../../provider/AuthProvider";
 import { ErrorMsg } from "../../constants/error";
 import { getNow } from "../util/time";
@@ -210,7 +210,4 @@ h-[70%] w-[60%] overflow-y-auto overflow-x-hidden relative
 
 const SearchInput = tw.input`
 rounded-xl w-full px-[5%] py-2 outline-none
-`;
-const SearchBtn = tw.button`
-absolute left-[94%] top-[50%] translate-y-[-50%] z-50 text-black
 `;

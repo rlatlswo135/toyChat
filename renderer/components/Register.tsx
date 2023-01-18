@@ -72,8 +72,6 @@ function Register() {
     router.push("/home");
   };
 
-  // Todo 가입 중복시 에러메시지
-  // {loading && <Spinner className="pt-5" size={100} text="SignUp..." />}
   if (loading) {
     return <Spinner className="pt-5" size={200} text="Sign Up..." />;
   }
@@ -110,4 +108,3 @@ const ImageWrap = tw.div`
 hidden relative w-24 h-24 p-5 rounded-full overflow-hidden
 md:block md:w-40 md:h-40 xl:w-60 xl:h-60
 `;
-// sm:hidden xl:relative
